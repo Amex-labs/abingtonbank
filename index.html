@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abington Banking</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="noise"></div>
+    <div class="halo halo-one"></div>
+    <div class="halo halo-two"></div>
+
+    <section id="site-home" class="site-home">
+        <div class="home-utility-bar">
+            <div class="home-utility-links">
+                <span>Relationship banking</span>
+                <span>Personal</span>
+                <span>Business</span>
+                <span>Home loans</span>
+                <span>Fraud support</span>
+            </div>
+            <div class="home-utility-contact">
+                <span>Client services</span>
+                <strong>978.573.1300</strong>
+                <a href="mailto:abingtonbank@aol.com">abingtonbank@aol.com</a>
+                <a href="https://wa.me/17828591844" target="_blank" rel="noreferrer">WhatsApp +1 782 859 1844</a>
+            </div>
+        </div>
+
+        <header class="home-header">
+            <div class="home-brand">
+                <p class="eyebrow">Private banking</p>
+                <strong>Abington Banking</strong>
+            </div>
+            <nav class="home-nav" aria-label="Homepage">
+                <button class="home-nav-button" type="button" data-home-jump="experience">Personal</button>
+                <button class="home-nav-button" type="button" data-home-jump="experience">Business</button>
+                <button class="home-nav-button" type="button" data-home-jump="experience">Home loans</button>
+                <button class="home-nav-button" type="button" data-home-jump="connect">Contact</button>
+            </nav>
+            <div class="home-actions">
+                <button class="action-button action-button--ghost" type="button" data-auth-panel-target="create">Create</button>
+                <button class="action-button" type="button" data-auth-panel-target="customer">Login</button>
+            </div>
+        </header>
+
+        <section class="home-hero">
+            <div class="home-hero-copy reveal">
+                <p class="eyebrow">Welcome to Abington Banking</p>
+                <h1>Warm, modern banking built around everyday access, trusted service, and a calm digital experience.</h1>
+                <p class="home-lead">
+                    Open your online banking profile, review balances, move money, and manage your relationship from a clean secure workspace designed to feel familiar and professional.
+                </p>
+                <div class="home-hero-actions">
+                    <button class="action-button" type="button" data-auth-panel-target="customer">Online banking login</button>
+                    <button class="action-button action-button--ghost" type="button" data-auth-panel-target="create">Open an account</button>
+                </div>
+                <p class="home-hero-note">Secure online access, digital servicing, and relationship support in one place.</p>
+            </div>
+
+            <div class="home-hero-visual reveal" aria-hidden="true">
+                <div class="visual-stage">
+                    <div class="visual-column">
+                        <span class="visual-label">Personal banking</span>
+                        <strong>Checking and savings</strong>
+                        <span>Day-to-day money management with a polished digital front door.</span>
+                    </div>
+                    <div class="visual-column visual-column--accent">
+                        <span class="visual-label">Relationship support</span>
+                        <strong>Payments and servicing</strong>
+                        <span>Transfer activity, payment routing, and account servicing from a single secure workspace.</span>
+                    </div>
+                    <div class="visual-ticker">
+                        <span>Checking</span>
+                        <span>Savings</span>
+                        <span>Cards</span>
+                        <span>Statements</span>
+                        <span>Digital banking</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="experience" class="home-detail-band">
+            <div class="detail-intro">
+                <p class="eyebrow">Everyday banking</p>
+                <h2>Banking pages should feel welcoming first, then useful the moment you sign in.</h2>
+            </div>
+            <div class="detail-grid">
+                <article>
+                    <span class="detail-kicker">Digital access</span>
+                    <h3>Clean entry into online banking</h3>
+                    <p>The homepage now behaves like a bank landing page with a welcoming first impression, a clear login path, and a cleaner enrollment experience.</p>
+                </article>
+                <article>
+                    <span class="detail-kicker">Account servicing</span>
+                    <h3>Balances, payments, and transfers in one place</h3>
+                    <p>Checking, savings, card, and loan balances stay visible while transfers, receipts, statements, and notifications keep updating after sign-in.</p>
+                </article>
+                <article>
+                    <span class="detail-kicker">Client support</span>
+                    <h3>Warm language with a steady professional tone</h3>
+                    <p>The public-facing experience is cleaner and more welcoming while the secure workspace keeps the denser banking controls where they belong.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="access" class="home-access">
+            <div class="access-copy">
+                <p class="eyebrow">Online banking</p>
+                <h2>Sign in or get started.</h2>
+                <p>Access your banking profile securely or begin an application for a new online relationship.</p>
+                <div id="auth-feedback" class="auth-feedback" hidden></div>
+            </div>
+
+            <div class="auth-surface">
+                <div class="auth-tabs" role="tablist" aria-label="Access mode">
+                    <button class="auth-tab auth-tab--active" type="button" data-auth-panel-target="customer">Customer login</button>
+                    <button class="auth-tab" type="button" data-auth-panel-target="create">Create profile</button>
+                </div>
+
+                <div class="auth-panels">
+                    <form id="customer-login-form" class="auth-form auth-form--active" data-auth-panel="customer">
+                        <label>
+                            Email
+                            <input type="email" name="email" placeholder="name@example.com" autocomplete="username">
+                        </label>
+                        <label>
+                            Password
+                            <input type="password" name="password" placeholder="Enter your password" autocomplete="current-password">
+                        </label>
+                        <button class="action-button" type="submit">Login to online banking</button>
+                    </form>
+
+                    <form id="create-profile-form" class="auth-form" data-auth-panel="create" hidden>
+                        <label>
+                            Full name
+                            <input type="text" name="fullName" placeholder="Full legal name" autocomplete="name">
+                        </label>
+                        <label>
+                            Email
+                            <input type="email" name="email" placeholder="name@example.com" autocomplete="email">
+                        </label>
+                        <label>
+                            Create password
+                            <input type="password" name="password" placeholder="Create a password" autocomplete="new-password">
+                        </label>
+                        <button class="action-button" type="submit">Create online profile</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="connect" class="credential-band">
+            <div>
+                <p class="eyebrow">Connect</p>
+                <h2>Stay close to the people and tools that support your banking relationship.</h2>
+            </div>
+            <div class="connect-strip">
+                <article class="connect-card">
+                    <span class="detail-kicker">Customer care</span>
+                    <strong>978.573.1300</strong>
+                    <div class="connect-card-links">
+                        <a href="mailto:abingtonbank@aol.com">abingtonbank@aol.com</a>
+                        <a href="https://wa.me/17828591844" target="_blank" rel="noreferrer">WhatsApp +1 782 859 1844</a>
+                    </div>
+                    <p>Speak with client services for day-to-day servicing, account assistance, and digital banking support.</p>
+                </article>
+                <article class="connect-card">
+                    <span class="detail-kicker">Locations</span>
+                    <strong>Find a branch</strong>
+                    <p>Review hours, service availability, and branch support for in-person banking.</p>
+                </article>
+                <article class="connect-card">
+                    <span class="detail-kicker">Digital help</span>
+                    <strong>Secure support</strong>
+                    <p>Get help with digital banking access, transfers, statements, and payment activity.</p>
+                </article>
+                <article class="connect-card">
+                    <span class="detail-kicker">Fraud support</span>
+                    <strong>Protect your accounts</strong>
+                    <p>Reach the support team quickly when you need help reviewing account activity.</p>
+                </article>
+            </div>
+            <div class="detail-grid">
+                <article>
+                    <span class="detail-kicker">Client services</span>
+                    <h3>Call, message, or visit</h3>
+                    <p>Use the contact bar above for client services, email support, WhatsApp contact, location support, and day-to-day servicing questions.</p>
+                </article>
+                <article>
+                    <span class="detail-kicker">Digital servicing</span>
+                    <h3>Secure login for account activity</h3>
+                    <p>Online banking is designed for balance review, transfer activity, statements, notifications, and secure account servicing.</p>
+                </article>
+                <article>
+                    <span class="detail-kicker">Relationship access</span>
+                    <h3>Clean pathways for customers and support staff</h3>
+                    <p>Administrative servicing remains separate from the public site so the customer-facing experience stays warm, simple, and professional.</p>
+                </article>
+            </div>
+        </section>
+    </section>
+
+    <div id="account-portal" class="portal-shell" hidden>
+    <div class="portal-bar">
+        <div>
+            <p class="eyebrow">Online banking</p>
+            <strong>Customer account</strong>
+        </div>
+        <div class="portal-bar-actions">
+            <button class="action-button action-button--ghost" id="return-home-button" type="button">Homepage</button>
+            <button class="action-button" id="logout-account-button" type="button">Logout</button>
+        </div>
+    </div>
+
+    <div class="app-shell">
+        <aside class="rail">
+            <div class="brand-block reveal">
+                <p class="eyebrow">Private banking workspace</p>
+                <h1>Abington Banking</h1>
+                <p class="brand-copy">
+                    Balances, transfers, receipts, statements, and account controls remain together in one secure digital workspace.
+                </p>
+            </div>
+
+            <nav class="nav-list reveal" aria-label="Primary">
+                <button class="nav-button nav-button--active" data-view-target="overview">Portfolio</button>
+                <button class="nav-button" data-view-target="payments">Payments</button>
+                <button class="nav-button" data-view-target="cards">Cards</button>
+                <button class="nav-button" data-view-target="statements">Statements</button>
+                <button class="nav-button" data-view-target="operations">Operations</button>
+            </nav>
+
+            <div class="rail-foot reveal">
+                <span class="status-chip">Online account</span>
+                <p id="business-date-label">Business date</p>
+                <p class="mini-note">
+                    Payment rails, verification workflows, and servicing controls remain available below.
+                </p>
+            </div>
+        </aside>
+
+        <main class="workspace">
+            <header class="topbar reveal">
+                <div>
+                    <p class="eyebrow">Relationship balance</p>
+                    <h2 id="relationship-balance">$0.00</h2>
+                </div>
+                <div class="topbar-actions">
+                    <div class="topbar-metric">
+                        <span>Available to move</span>
+                        <strong id="available-to-move">$0.00</strong>
+                    </div>
+                    <button id="advance-day-button" class="action-button action-button--ghost" type="button">
+                        Process next cycle
+                    </button>
+                </div>
+            </header>
+
+            <section class="view view--active" data-view="overview">
+                <div class="overview-stage">
+                    <section class="balance-poster reveal">
+                        <div>
+                            <p class="eyebrow">Client profile</p>
+                            <h3 id="client-name">Gabriele Navisi</h3>
+                            <p id="client-tier" class="poster-copy"></p>
+                            <div class="poster-actions">
+                                <button class="action-button" id="poster-quick-transfer-button" type="button">Quick transfer</button>
+                                <p class="poster-inline-note">Open the homepage transfer workspace with staged status tracking and account receipts.</p>
+                            </div>
+                        </div>
+                        <div class="metric-ribbon">
+                            <div>
+                                <span>Total deposits</span>
+                                <strong id="total-assets">$0.00</strong>
+                            </div>
+                            <div>
+                                <span>Total liabilities</span>
+                                <strong id="total-liabilities">$0.00</strong>
+                            </div>
+                            <div>
+                                <span>Pending card holds</span>
+                                <strong id="pending-holds-total">$0.00</strong>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div id="overview-highlights" class="overview-highlights reveal"></div>
+
+                    <div class="workspace-grid overview-command-grid">
+                        <section class="section-block reveal">
+                            <div class="section-heading">
+                                <div>
+                                    <p class="eyebrow">Quick transfer</p>
+                                    <h3>Move funds from the account homepage</h3>
+                                </div>
+                                <div class="heading-actions">
+                                    <span class="status-chip">Pending to successful</span>
+                                    <button class="action-button action-button--ghost" id="quick-transfer-launcher" type="button">Open quick transfer</button>
+                                </div>
+                            </div>
+                            <p class="section-copy">Launch the transfer workspace, complete rail-specific details, and follow the payment path through pending, processing, transferring, and successful stages.</p>
+                            <div id="quick-transfer-summary" class="quick-transfer-summary"></div>
+                            <div id="quick-transfer-panel" class="quick-transfer-panel" hidden>
+                                <div class="quick-transfer-panel-head">
+                                    <div>
+                                        <p class="eyebrow">Transfer workspace</p>
+                                        <h4>Complete routing details</h4>
+                                    </div>
+                                    <button class="mini-button" id="quick-transfer-close" type="button">Collapse</button>
+                                </div>
+                                <form id="transfer-form" class="control-form quick-transfer-form">
+                                    <label>
+                                        Rail
+                                        <select name="railType" id="transfer-rail">
+                                            <option value="internal">Internal</option>
+                                            <option value="ach" selected>ACH</option>
+                                            <option value="fedwire">Fedwire</option>
+                                            <option value="cardNetwork">Card network</option>
+                                        </select>
+                                    </label>
+                                    <label>
+                                        From account
+                                        <select name="fromAccount" id="transfer-from"></select>
+                                    </label>
+                                    <label>
+                                        Amount
+                                        <input type="number" name="amount" min="1" step="0.01" value="2500">
+                                    </label>
+                                    <label>
+                                        Effective date
+                                        <input type="date" name="effectiveDate" id="transfer-date">
+                                    </label>
+                                    <label>
+                                        Beneficiary name
+                                        <input type="text" name="beneficiaryName" value="Sterling Home Services">
+                                    </label>
+                                    <label>
+                                        Destination bank
+                                        <input type="text" name="beneficiaryBank" value="Riverbend Credit Union">
+                                    </label>
+                                    <label>
+                                        Routing / sort code
+                                        <input type="text" name="routingNumber" inputmode="numeric" maxlength="9" value="021000021">
+                                    </label>
+                                    <label>
+                                        Account number
+                                        <input type="text" name="accountNumber" inputmode="numeric" value="5520198841">
+                                    </label>
+                                    <label>
+                                        Confirm account number
+                                        <input type="text" name="confirmAccountNumber" inputmode="numeric" value="5520198841">
+                                    </label>
+                                    <label>
+                                        Receipt email
+                                        <input type="email" name="receiptEmail" value="ops@sterling-services.test">
+                                    </label>
+                                    <div id="transfer-guardrail" class="transfer-guidance full-span"></div>
+                                    <div class="rail-fields full-span">
+                                        <div class="rail-panel rail-panel--active" data-rail-fields="internal">
+                                            <label>
+                                                To account
+                                                <select name="toAccount" id="transfer-to"></select>
+                                            </label>
+                                            <label>
+                                                Internal reference
+                                                <input type="text" name="internalReference" value="Portfolio rebalancing">
+                                            </label>
+                                            <label>
+                                                Branch code
+                                                <input type="text" name="internalBranchCode" value="0321">
+                                            </label>
+                                            <label>
+                                                Internal posting group
+                                                <input type="text" name="internalPostingGroup" value="Household transfer">
+                                            </label>
+                                        </div>
+
+                                        <div class="rail-panel rail-panel--hidden" data-rail-fields="ach">
+                                            <label>
+                                                Account type
+                                                <select name="achAccountType">
+                                                    <option value="checking">Checking</option>
+                                                    <option value="savings">Savings</option>
+                                                </select>
+                                            </label>
+                                            <label>
+                                                Standard entry class
+                                                <select name="achSecCode">
+                                                    <option value="PPD">PPD</option>
+                                                    <option value="CCD">CCD</option>
+                                                    <option value="WEB">WEB</option>
+                                                </select>
+                                            </label>
+                                            <label>
+                                                Processing speed
+                                                <select name="achSpeed">
+                                                    <option value="same-day">Same day</option>
+                                                    <option value="standard">Standard</option>
+                                                </select>
+                                            </label>
+                                            <label>
+                                                Recipient mobile
+                                                <input type="tel" name="achMobile" value="+1 202 555 0148">
+                                            </label>
+                                        </div>
+
+                                        <div class="rail-panel rail-panel--hidden" data-rail-fields="fedwire">
+                                            <label>
+                                                Wire purpose code
+                                                <input type="text" name="fedPurposeCode" value="CLOSING">
+                                            </label>
+                                            <label>
+                                                Intermediary bank
+                                                <input type="text" name="fedIntermediaryBank" value="First Harbor Trust">
+                                            </label>
+                                            <label class="full-span">
+                                                Beneficiary address
+                                                <input type="text" name="fedAddress" value="50 State Street, New York, NY">
+                                            </label>
+                                            <label class="full-span">
+                                                Fedwire reference
+                                                <input type="text" name="fedReference" value="Closing funds reference">
+                                            </label>
+                                        </div>
+
+                                        <div class="rail-panel rail-panel--hidden" data-rail-fields="cardNetwork">
+                                            <label>
+                                                Network
+                                                <select name="cardNetwork">
+                                                    <option value="Visa">Visa</option>
+                                                    <option value="Mastercard">Mastercard</option>
+                                                    <option value="Amex">Amex</option>
+                                                </select>
+                                            </label>
+                                            <label>
+                                                Network token / last 4
+                                                <input type="text" name="cardToken" value="TKN-9812">
+                                            </label>
+                                            <label>
+                                                Processor reference
+                                                <input type="text" name="cardProcessorReference" value="Push-to-card payout">
+                                            </label>
+                                            <label>
+                                                Payout category
+                                                <input type="text" name="cardPayoutCategory" value="Card to bank settlement">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <label class="full-span">
+                                        Transfer description
+                                        <input type="text" name="purpose" value="Relationship transfer to external beneficiary">
+                                    </label>
+                                    <label class="full-span">
+                                        Memo
+                                        <input type="text" name="memo" value="Relationship transfer">
+                                    </label>
+                                    <button class="action-button" type="submit">Transfer funds</button>
+                                </form>
+                            </div>
+                        </section>
+
+                        <section class="section-block reveal">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Transfer tracking</p>
+                                <h3>Progress, receipts, and rail readiness</h3>
+                            </div>
+                                <button class="action-button action-button--ghost" id="home-download-receipt" type="button">Download latest receipt</button>
+                        </div>
+                        <p class="section-copy">Every quick transfer keeps its staged progress visible on the homepage while approvals, receipts, and rail readiness stay in view.</p>
+                        <div id="quick-transfer-progress" class="transfer-progress-stack"></div>
+                        <div id="transfer-approval-panel" class="transfer-approval-panel"></div>
+                        <div id="home-transfer-status" class="compact-list"></div>
+                        <div id="home-receipt-summary" class="compact-list compact-list--divider"></div>
+                        <div id="transfer-delivery-preview" class="compact-list compact-list--divider"></div>
+                    </section>
+                </div>
+
+                    <div class="workspace-grid">
+                        <section class="section-block reveal">
+                            <div class="section-heading">
+                                <div>
+                                    <p class="eyebrow">Accounts</p>
+                                    <h3>Position and liquidity</h3>
+                                </div>
+                                <p class="section-copy">Live balances update when transfers, payments, and holds post.</p>
+                            </div>
+                            <div id="accounts-grid" class="account-lines"></div>
+                            <div id="allocation-bar" class="allocation-bar" aria-label="Account allocation"></div>
+                        </section>
+
+                        <section class="section-block reveal">
+                            <div class="section-heading">
+                                <div>
+                                    <p class="eyebrow">Activity</p>
+                                    <h3>Ledger stream</h3>
+                                </div>
+                                <p class="section-copy">Recent account movements, scheduled processing, and card events.</p>
+                            </div>
+                            <div id="activity-list" class="activity-list"></div>
+                        </section>
+                    </div>
+                </div>
+            </section>
+
+            <section class="view" data-view="payments">
+                <div class="workspace-grid">
+                    <section class="section-block reveal">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Payments</p>
+                                <h3>Loan and card servicing</h3>
+                            </div>
+                            <p class="section-copy">Pay now or set a dated payment for liabilities.</p>
+                        </div>
+                        <form id="payment-form" class="control-form">
+                            <label>
+                                Funding account
+                                <select name="fromAccount" id="payment-from"></select>
+                            </label>
+                            <label>
+                                Destination
+                                <select name="toAccount" id="payment-to"></select>
+                            </label>
+                            <label>
+                                Amount
+                                <input type="number" name="amount" min="1" step="0.01" value="1200">
+                            </label>
+                            <label>
+                                Run date
+                                <input type="date" name="runDate" id="payment-date">
+                            </label>
+                            <label>
+                                Receipt email
+                                <input type="email" name="receiptEmail" value="gabriele.private@abington.test">
+                            </label>
+                            <label class="full-span">
+                                Memo
+                                <input type="text" name="memo" value="Scheduled liability payment">
+                            </label>
+                            <button class="action-button" type="submit">Submit payment</button>
+                        </form>
+                    </section>
+
+                    <section class="section-block reveal">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Recurring</p>
+                                <h3>Automate balance movement</h3>
+                            </div>
+                            <p class="section-copy">Create a recurring sweep between deposit accounts.</p>
+                        </div>
+                        <form id="recurring-form" class="control-form recurring-form">
+                            <label>
+                                From
+                                <select name="fromAccount" id="recurring-from"></select>
+                            </label>
+                            <label>
+                                To
+                                <select name="toAccount" id="recurring-to"></select>
+                            </label>
+                            <label>
+                                Amount
+                                <input type="number" name="amount" min="1" step="0.01" value="1500">
+                            </label>
+                            <label>
+                                Frequency
+                                <select name="frequency">
+                                    <option value="weekly">Weekly</option>
+                                    <option value="biweekly">Biweekly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </label>
+                            <label>
+                                First run
+                                <input type="date" name="firstRun" id="recurring-date">
+                            </label>
+                            <label class="full-span">
+                                Memo
+                                <input type="text" name="memo" value="Treasury reserve sweep">
+                            </label>
+                            <button class="action-button" type="submit">Create recurring transfer</button>
+                        </form>
+                    </section>
+
+                    <section class="section-block reveal">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Receipt</p>
+                                <h3>Payment receipt</h3>
+                            </div>
+                            <p class="section-copy">Each posted transfer or payment generates a downloadable account receipt. When the local delivery service is running, PDF and email records are also prepared.</p>
+                        </div>
+                        <div class="receipt-toolbar">
+                            <button id="download-receipt-button" class="action-button action-button--ghost" type="button">
+                                Download receipt
+                            </button>
+                        </div>
+                        <pre id="receipt-preview" class="statement-preview">Post a transfer or payment to generate the latest receipt.</pre>
+                    </section>
+
+                    <section class="section-block reveal">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Queue</p>
+                                <h3>Scheduled items</h3>
+                            </div>
+                            <p class="section-copy">The next cycle processes anything due on or before the business date.</p>
+                        </div>
+                        <div id="scheduled-list" class="compact-list"></div>
+                        <div id="recurring-list" class="compact-list compact-list--divider"></div>
+                    </section>
+                </div>
+            </section>
+
+            <section class="view" data-view="cards">
+                <div class="workspace-grid">
+                    <section class="section-block reveal">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Card profile</p>
+                                <h3>Signature card controls</h3>
+                            </div>
+                            <p class="section-copy">Hold placement respects frozen state, channel rules, and spend limit.</p>
+                        </div>
+                        <div class="card-panel">
+                            <div class="card-face">
+                                <span>Abington Signature</span>
+                                <strong id="card-available-credit">$0.00</strong>
+                                <p id="card-mask">•••• 0000</p>
+                            </div>
+                            <div class="control-cluster">
+                                <label class="switch-row">
+                                    <span>Freeze card</span>
+                                    <input type="checkbox" id="control-frozen">
+                                </label>
+                                <label class="switch-row">
+                                    <span>Allow online</span>
+                                    <input type="checkbox" id="control-online">
+                                </label>
+                                <label class="switch-row">
+                                    <span>Allow international</span>
+                                    <input type="checkbox" id="control-international">
+                                </label>
+                                <label class="switch-row">
+                                    <span>Allow cash advance</span>
+                                    <input type="checkbox" id="control-cash">
+                                </label>
+                                <label class="limit-row">
+                                    <span>Daily spend limit</span>
+                                    <input type="number" id="daily-limit-input" min="100" step="50">
+                                </label>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="section-block reveal">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Authorization simulator</p>
+                                <h3>Create a pending hold</h3>
+                            </div>
+                            <p class="section-copy">Pending holds reserve available credit until capture or release.</p>
+                        </div>
+                        <form id="hold-form" class="control-form">
+                            <label>
+                                Merchant
+                                <input type="text" name="merchant" value="Harbor Suites">
+                            </label>
+                            <label>
+                                Amount
+                                <input type="number" name="amount" min="1" step="0.01" value="325.50">
+                            </label>
+                            <label>
+                                Channel
+                                <select name="type">
+                                    <option value="purchase">Purchase</option>
+                                    <option value="online">Online</option>
+                                    <option value="international">International</option>
+                                    <option value="cashAdvance">Cash advance</option>
+                                </select>
+                            </label>
+                            <button class="action-button" type="submit">Place hold</button>
+                        </form>
+                        <div id="holds-list" class="holds-list"></div>
+                    </section>
+                </div>
+            </section>
+
+            <section class="view" data-view="statements">
+                <div class="workspace-grid">
+                    <section class="section-block reveal">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Statements</p>
+                                <h3>Generate a mock statement</h3>
+                            </div>
+                            <p class="section-copy">View and download an account statement summary for any account.</p>
+                        </div>
+                        <form id="statement-form" class="control-form">
+                            <label>
+                                Account
+                                <select name="accountId" id="statement-account"></select>
+                            </label>
+                            <label>
+                                Month
+                                <input type="month" name="statementMonth" id="statement-month">
+                            </label>
+                            <button class="action-button" type="submit">Generate statement</button>
+                            <button id="download-statement-button" class="action-button action-button--ghost" type="button">
+                                Download text copy
+                            </button>
+                        </form>
+                    </section>
+
+                    <section class="section-block reveal">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Statement</p>
+                                <h3>Statement output</h3>
+                            </div>
+                            <p class="section-copy">Generated from the account ledger for local review and download.</p>
+                        </div>
+                        <pre id="statement-preview" class="statement-preview">Generate a statement to view the latest output.</pre>
+                    </section>
+                </div>
+            </section>
+
+            <section class="view" data-view="operations">
+                <div class="workspace-grid">
+                    <section class="section-block reveal">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Visible account controls</p>
+                                <h3>Operator-adjusted funding</h3>
+                            </div>
+                            <p class="section-copy">No hidden overrides. Operator actions require a visible actor ID and are audited below.</p>
+                        </div>
+                        <form id="operator-form" class="control-form">
+                            <label>
+                                Operator ID
+                                <input type="text" name="actorId" value="ops_visible_01">
+                            </label>
+                            <label>
+                                Destination account
+                                <select name="accountId" id="operator-account"></select>
+                            </label>
+                            <label>
+                                Amount
+                                <input type="number" name="amount" min="1" step="0.01" value="5000">
+                            </label>
+                            <label class="full-span">
+                                Memo
+                                <input type="text" name="memo" value="Visible account adjustment">
+                            </label>
+                            <button class="action-button" type="submit">Move seeded funds</button>
+                        </form>
+                        <div id="funding-pool-status" class="operator-status"></div>
+                    </section>
+
+                    <section class="section-block reveal">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Verification calls</p>
+                                <h3>Account verification orchestration</h3>
+                            </div>
+                            <p class="section-copy">Run KYC, identity, ACH, Fedwire, and card network checks before routing transfers.</p>
+                        </div>
+                        <div class="verification-actions">
+                            <button class="mini-button verification-call-button" data-call="kyc" type="button">Run KYC</button>
+                            <button class="mini-button verification-call-button" data-call="identity" type="button">Run identity</button>
+                            <button class="mini-button verification-call-button" data-call="ach" type="button">Run ACH</button>
+                            <button class="mini-button verification-call-button" data-call="fedwire" type="button">Run Fedwire</button>
+                            <button class="mini-button verification-call-button" data-call="cardNetwork" type="button">Run card network</button>
+                        </div>
+                        <div id="verification-list" class="compact-list compact-list--divider"></div>
+                    </section>
+
+                    <section class="section-block reveal">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Audit</p>
+                                <h3>Operator trail</h3>
+                            </div>
+                            <p class="section-copy">Every operator action is timestamped and displayed in the workspace.</p>
+                        </div>
+                        <div id="audit-list" class="compact-list"></div>
+                    </section>
+                </div>
+            </section>
+        </main>
+
+        <aside class="inspector">
+            <section class="inspector-block reveal">
+                <div class="section-heading section-heading--tight">
+                    <div>
+                        <p class="eyebrow">Notifications</p>
+                        <h3>Client feed</h3>
+                    </div>
+                </div>
+                <div id="notifications-list" class="notification-list"></div>
+            </section>
+
+            <section class="inspector-block reveal">
+                <div class="section-heading section-heading--tight">
+                    <div>
+                        <p class="eyebrow">System queue</p>
+                        <h3>Due next</h3>
+                    </div>
+                </div>
+                <div id="queue-list" class="compact-list"></div>
+            </section>
+        </aside>
+    </div>
+    </div>
+
+    <footer class="site-footer">
+        Abington Banking local preview environment. Account activity, transfers, delivery records, statements, and verification workflows are for interface review only and do not connect to live financial infrastructure.
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

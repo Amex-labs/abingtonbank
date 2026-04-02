@@ -1,0 +1,12 @@
+{
+  "name": "abingtonbank",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local preview banking simulator with sandbox OTP and receipt delivery endpoints.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}

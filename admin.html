@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abington Banking Admin</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-portal-view="admin">
+    <div class="noise"></div>
+    <div class="halo halo-one"></div>
+    <div class="halo halo-two"></div>
+
+    <div class="admin-shell">
+        <section id="admin-login" class="admin-login">
+            <div class="admin-login-copy">
+                <p class="eyebrow">Administrative access</p>
+                <h1>Approval inbox administration</h1>
+                <p>This page is reserved for secure approval monitoring and local delivery servicing. Sign in with the administrative inbox credential to continue.</p>
+            </div>
+            <form id="admin-login-form" class="auth-form admin-form">
+                <label>
+                    Email
+                    <input type="email" name="email" autocomplete="username" placeholder="Administrative inbox email">
+                </label>
+                <label>
+                    Password
+                    <input type="password" name="password" autocomplete="current-password" placeholder="Enter administrative password">
+                </label>
+                <button class="action-button" type="submit">Login</button>
+                <div id="admin-login-feedback" class="auth-feedback" hidden></div>
+            </form>
+        </section>
+
+        <div id="admin-dashboard" class="portal-shell portal-shell--admin" hidden>
+            <div class="portal-bar">
+                <div>
+                    <p class="eyebrow">Signed in</p>
+                    <strong>Administrative approval inbox</strong>
+                </div>
+                <div class="portal-bar-actions">
+                    <a class="action-button action-button--ghost" href="index.html">Customer homepage</a>
+                    <button class="action-button action-button--ghost" id="admin-refresh-button" type="button">Refresh inbox</button>
+                    <button class="action-button" id="admin-logout-button" type="button">Logout</button>
+                </div>
+            </div>
+
+            <section class="inbox-shell">
+                <header class="inbox-header">
+                    <div>
+                        <p class="eyebrow">Approval desk</p>
+                        <h2>Approval code dashboard</h2>
+                        <p class="section-copy">Monitor active transfer approvals, refresh approval codes, and review receipt delivery artifacts.</p>
+                    </div>
+                    <div class="heading-actions">
+                        <span class="status-chip">Administrative inbox</span>
+                    </div>
+                </header>
+
+                <div class="workspace-grid inbox-grid">
+                    <section class="section-block reveal">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">System health</p>
+                                <h3>Delivery service</h3>
+                            </div>
+                        </div>
+                        <div id="admin-health-panel" class="compact-list"></div>
+                    </section>
+
+                    <section class="section-block reveal">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Active approvals</p>
+                                <h3>Transfer approval queue</h3>
+                            </div>
+                        </div>
+                        <div id="admin-otp-queue" class="compact-list"></div>
+                    </section>
+
+                    <section class="section-block reveal">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Receipts</p>
+                                <h3>Receipt delivery artifacts</h3>
+                            </div>
+                        </div>
+                        <div id="admin-receipt-list" class="compact-list"></div>
+                    </section>
+
+                    <section class="section-block reveal">
+                        <div class="section-heading">
+                            <div>
+                                <p class="eyebrow">Access</p>
+                                <h3>Administrative controls</h3>
+                            </div>
+                        </div>
+                        <div class="compact-list">
+                            <article class="compact-item">
+                                <div class="compact-head">
+                                    <div>
+                                        <strong>Approval inbox</strong>
+                                        <span>Use this administrative route for approval codes only.</span>
+                                    </div>
+                                </div>
+                            </article>
+                            <article class="compact-item">
+                                <div class="compact-head">
+                                    <div>
+                                        <strong>Customer-facing site</strong>
+                                        <span>The main website keeps customer login and public navigation separate from approval servicing.</span>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </section>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
