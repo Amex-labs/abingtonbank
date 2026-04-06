@@ -2404,6 +2404,7 @@ body[data-portal-view="account"] .hold-item {
 
     body[data-portal-view="account"] .app-shell {
         padding-top: 8px;
+        grid-template-columns: 1fr;
     }
 
     body[data-portal-view="account"] .topbar h2 {
@@ -2417,6 +2418,58 @@ body[data-portal-view="account"] .hold-item {
     body[data-portal-view="account"] .overview-command-grid {
         grid-template-columns: 1fr;
     }
+
+    body[data-portal-view="account"] .workspace-grid,
+    body[data-portal-view="account"] .overview-highlights,
+    body[data-portal-view="account"] .metric-ribbon,
+    body[data-portal-view="account"] .control-form,
+    body[data-portal-view="account"] .rail-panel,
+    body[data-portal-view="account"] .quick-transfer-summary,
+    body[data-portal-view="account"] .transfer-status-actions {
+        grid-template-columns: 1fr;
+    }
+
+    body[data-portal-view="account"] .inspector {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    body[data-portal-view="account"] .nav-list {
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(138px, 1fr);
+        overflow-x: auto;
+        gap: 10px;
+        margin: 18px 0 12px;
+        padding-bottom: 6px;
+        scroll-snap-type: x proximity;
+    }
+
+    body[data-portal-view="account"] .nav-button {
+        min-height: 46px;
+        white-space: nowrap;
+        text-align: center;
+        scroll-snap-align: start;
+    }
+
+    body[data-portal-view="account"] .topbar,
+    body[data-portal-view="account"] .topbar-actions,
+    body[data-portal-view="account"] .section-heading,
+    body[data-portal-view="account"] .poster-actions,
+    body[data-portal-view="account"] .heading-actions,
+    body[data-portal-view="account"] .quick-transfer-panel-head,
+    body[data-portal-view="account"] .transfer-progress-head,
+    body[data-portal-view="account"] .transfer-progress-meta,
+    body[data-portal-view="account"] .transfer-progress-foot,
+    body[data-portal-view="account"] .approval-card-head,
+    body[data-portal-view="account"] .approval-actions {
+        flex-direction: column;
+        align-items: start;
+    }
+
+    body[data-portal-view="account"] .topbar-metric {
+        text-align: left;
+    }
 }
 
 @media (max-width: 640px) {
@@ -2428,10 +2481,23 @@ body[data-portal-view="account"] .hold-item {
     body[data-portal-view="account"] .portal-bar {
         padding: 14px 16px;
         border-radius: 20px;
+        gap: 12px;
     }
 
     body[data-portal-view="account"] .portal-bar strong {
         font-size: 1.05rem;
+    }
+
+    body[data-portal-view="account"] .portal-bar-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    body[data-portal-view="account"] .portal-bar-actions .action-button {
+        width: 100%;
+        justify-content: center;
     }
 
     body[data-portal-view="account"] .app-shell {
@@ -2476,6 +2542,10 @@ body[data-portal-view="account"] .hold-item {
         font-size: clamp(1.65rem, 8vw, 2rem);
     }
 
+    body[data-portal-view="account"] .balance-poster::after {
+        display: none;
+    }
+
     body[data-portal-view="account"] .section-block,
     body[data-portal-view="account"] .inspector-block {
         padding: 18px;
@@ -2483,5 +2553,10 @@ body[data-portal-view="account"] .hold-item {
 
     body[data-portal-view="account"] .section-heading h3 {
         font-size: 1.18rem;
+    }
+
+    body[data-portal-view="account"] .nav-list {
+        grid-auto-columns: minmax(124px, 1fr);
+        margin: 16px 0 8px;
     }
 }
