@@ -1705,6 +1705,7 @@ a {
     }
 
     .home-header,
+    .home-utility-bar,
     .home-hero,
     .home-detail-band,
     .home-access,
@@ -1716,6 +1717,7 @@ a {
 
     .home-hero {
         min-height: auto;
+        gap: 18px;
     }
 
     .home-hero-copy,
@@ -1737,9 +1739,67 @@ a {
         grid-template-columns: 1fr;
     }
 
+    .home-utility-bar,
+    .home-utility-links,
+    .home-utility-contact {
+        align-items: start;
+        gap: 10px 14px;
+    }
+
+    .home-hero-copy h1 {
+        font-size: clamp(2.45rem, 8vw, 3.4rem);
+        line-height: 1.02;
+        max-width: 11ch;
+    }
+
+    .home-detail-band h2,
+    .credential-band h2,
+    .access-copy h2,
+    .inbox-header h2 {
+        font-size: clamp(1.85rem, 7vw, 2.55rem);
+        line-height: 1.02;
+        max-width: 14ch;
+    }
+
+    .home-lead,
+    .home-hero-note,
+    .poster-copy,
+    .poster-inline-note {
+        font-size: 0.98rem;
+    }
+
+    .home-hero-visual {
+        min-height: 340px;
+    }
+
+    .home-brand strong {
+        font-size: 1.7rem;
+    }
+
     .app-shell {
         grid-template-columns: 1fr;
         padding: 16px;
+    }
+
+    .brand-block h1 {
+        font-size: clamp(1.95rem, 8vw, 2.5rem);
+    }
+
+    .nav-list {
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(142px, 1fr);
+        overflow-x: auto;
+        gap: 12px;
+        margin: 18px 0 12px;
+        padding-bottom: 6px;
+        scroll-snap-type: x proximity;
+    }
+
+    .nav-button {
+        min-height: 48px;
+        white-space: nowrap;
+        text-align: center;
+        scroll-snap-align: start;
     }
 
     .rail,
@@ -1794,8 +1854,199 @@ a {
         text-align: left;
     }
 
+    .topbar {
+        padding: 18px 20px;
+        gap: 14px;
+    }
+
+    .topbar h2 {
+        font-size: clamp(2.15rem, 10vw, 3.1rem);
+        line-height: 0.98;
+    }
+
+    .portal-bar strong {
+        font-size: 1.24rem;
+    }
+
+    .balance-poster {
+        min-height: auto;
+        gap: 18px;
+        padding: 22px 20px;
+    }
+
+    .balance-poster h3 {
+        margin-bottom: 12px;
+        font-size: clamp(1.85rem, 7vw, 2.4rem);
+        line-height: 1;
+    }
+
+    .balance-poster::after {
+        width: 220px;
+        height: 220px;
+    }
+
+    .overview-highlight-card {
+        padding: 16px;
+        border-radius: 20px;
+    }
+
+    .overview-highlight-card strong {
+        font-size: 1.24rem;
+    }
+
+    .section-heading h3 {
+        font-size: 1.42rem;
+        line-height: 1.06;
+    }
+
+    .quick-transfer-panel,
+    .transfer-progress-card,
+    .quick-summary-card {
+        padding: 16px;
+        border-radius: 20px;
+    }
+
     .inspector {
         display: grid;
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .site-home {
+        gap: 24px;
+    }
+
+    .home-utility-links {
+        display: none;
+    }
+
+    .home-utility-contact {
+        font-size: 0.86rem;
+    }
+
+    .home-header,
+    .home-hero,
+    .home-detail-band,
+    .home-access,
+    .credential-band,
+    .portal-bar,
+    .inbox-shell,
+    .admin-login {
+        width: min(100%, calc(100% - 20px));
+        padding: 18px;
+    }
+
+    .home-nav {
+        display: none;
+    }
+
+    .home-brand strong {
+        font-size: 1.48rem;
+    }
+
+    .home-hero-copy {
+        gap: 18px;
+        padding: 24px 20px;
+    }
+
+    .home-hero-copy h1 {
+        font-size: clamp(2.05rem, 10vw, 2.75rem);
+        max-width: 10ch;
+    }
+
+    .home-hero-actions,
+    .portal-bar-actions {
+        width: 100%;
+    }
+
+    .home-hero-actions .action-button,
+    .portal-bar-actions .action-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .home-hero-visual {
+        min-height: 280px;
+    }
+
+    .visual-stage {
+        padding: 26px 22px;
+    }
+
+    .visual-column strong {
+        font-size: 1.45rem;
+    }
+
+    .app-shell {
+        gap: 16px;
+        padding: 12px;
+    }
+
+    .rail,
+    .topbar,
+    .section-block,
+    .inspector-block,
+    .balance-poster {
+        border-radius: 20px;
+    }
+
+    .rail {
+        padding: 18px;
+    }
+
+    .brand-block h1 {
+        font-size: 1.9rem;
+    }
+
+    .nav-list {
+        grid-auto-columns: minmax(128px, 1fr);
+        gap: 10px;
+        margin: 16px 0 10px;
+    }
+
+    .topbar {
+        padding: 16px 18px;
+    }
+
+    .topbar h2 {
+        font-size: clamp(1.9rem, 11vw, 2.45rem);
+    }
+
+    .topbar-actions {
+        width: 100%;
+        gap: 12px;
+    }
+
+    .topbar-metric strong {
+        font-size: 1rem;
+    }
+
+    .balance-poster {
+        padding: 20px 18px;
+    }
+
+    .balance-poster h3 {
+        font-size: clamp(1.7rem, 8vw, 2.1rem);
+    }
+
+    .poster-actions {
+        gap: 10px;
+        margin-top: 16px;
+    }
+
+    .overview-stage,
+    .workspace-grid {
+        gap: 16px;
+    }
+
+    .overview-highlight-card strong,
+    .quick-summary-card strong,
+    .transfer-progress-card h4 {
+        font-size: 1.12rem;
+    }
+
+    .section-heading h3 {
+        font-size: 1.28rem;
     }
 }
