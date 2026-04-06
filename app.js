@@ -61,7 +61,7 @@ const state = {
     },
     customer: {
         name: "Gabriele Navisi",
-        tier: "Private Reserve relationship with upgraded payment controls, multi-rail transfer access, and operator-visible account funding."
+        tier: "Private Reserve relationship with account servicing, domestic transfer access, and consolidated cash visibility."
     },
     accounts: [
         { id: "chk_primary", label: "Premier Checking", type: "checking", class: "asset", balance: 84120.34, rateLabel: "0.35% APY", number: "•••• 0321" },
@@ -780,7 +780,7 @@ function buildTransferRequest(formData) {
 
 function buildReceiptText(details) {
     const lines = [
-        "ABINGTON BANKING",
+        "ABINGTON BANK",
         details.kind,
         "",
         `Receipt ID: ${details.receiptId}`,
@@ -1341,7 +1341,7 @@ function generateStatement(accountId, statementMonth) {
     });
 
     state.lastStatementText = [
-        "ABINGTON BANKING",
+        "ABINGTON BANK",
         "Account statement copy",
         "",
         `Account: ${account.label} (${account.number})`,
@@ -1659,36 +1659,36 @@ function renderOverviewHighlights() {
         {
             label: "Available to move",
             value: formatMoney(totals.availableToMove),
-            detail: "Combined immediately available balance across deposit accounts.",
+            detail: "Immediately available balance across eligible funding accounts.",
             tone: "default"
         },
         {
             label: "Active approvals",
             value: String(activeApprovals),
-            detail: activeApprovals ? "Approval requests are waiting in the administrative inbox." : "No transfer approvals are waiting right now.",
+            detail: activeApprovals ? "Awaiting review in the approval inbox." : "No approval items are currently open.",
             tone: activeApprovals ? "default" : "success"
         },
         {
             label: "Next scheduled item",
             value: nextScheduled ? formatShortDate(`${nextScheduled.effectiveDate || nextScheduled.runDate}T00:00:00Z`) : "Clear",
             detail: nextScheduled
-                ? `${formatMoney(nextScheduled.amount)} ${(nextScheduled.memo || "scheduled movement").toLowerCase()}`
-                : "No scheduled transfers or payments are due next.",
+                ? `${formatMoney(nextScheduled.amount)} · ${nextScheduled.memo || "Scheduled activity"}`
+                : "No scheduled transfers or payments are due.",
             tone: "default"
         },
         latestTransfer && latestTransfer.finalized
             ? {
                 label: "Latest transfer",
                 value: "Successful",
-                detail: `${formatMoney(latestTransfer.amount)} delivered to ${latestTransfer.destinationLabel}.`,
+                detail: `${formatMoney(latestTransfer.amount)} sent to ${latestTransfer.destinationLabel}.`,
                 tone: "success"
             }
             : {
                 label: "Transfer activity",
                 value: latestTransfer ? titleCaseStatus(latestTransfer.status) : "Ready",
                 detail: latestTransfer
-                    ? `${formatMoney(latestTransfer.amount)} to ${latestTransfer.destinationLabel} is moving through the workflow.`
-                    : "Quick transfer is ready from the account homepage.",
+                    ? `${formatMoney(latestTransfer.amount)} to ${latestTransfer.destinationLabel} remains in progress.`
+                    : "Quick transfer is ready from the account overview.",
                 tone: latestTransfer ? "default" : "success"
             }
     ];
