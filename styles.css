@@ -77,7 +77,8 @@ a {
 
 #site-home[hidden],
 #account-portal[hidden],
-#inbox-portal[hidden] {
+#inbox-portal[hidden],
+.mobile-account-menu[hidden] {
     display: none !important;
 }
 
