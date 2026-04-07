@@ -1865,7 +1865,7 @@ function renderQuickTransferWorkspace() {
 
     document.getElementById("quick-transfer-panel").hidden = !state.quickTransferUi.open;
     document.getElementById("quick-transfer-launcher").textContent = state.quickTransferUi.open ? "Hide quick transfer" : "Open quick transfer";
-    document.getElementById("poster-quick-transfer-button").textContent = state.quickTransferUi.open ? "Transfer workspace open" : "Quick transfer";
+    document.getElementById("poster-quick-transfer-button").textContent = "Quick Transfer";
     document.getElementById("home-download-receipt").disabled = !state.lastReceiptText && !state.lastReceiptDelivery?.pdfUrl;
     if (transferSubmitButton) {
         transferSubmitButton.disabled = !state.backend.online;
