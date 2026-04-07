@@ -213,12 +213,18 @@
             <button class="action-button action-button--ghost" id="return-home-button" type="button">Homepage</button>
             <button class="action-button" id="logout-account-button" type="button">Logout</button>
         </div>
-        <button class="portal-menu-toggle" id="portal-menu-toggle" type="button" aria-label="Open account menu" aria-expanded="false">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span class="sr-only">Open account menu</span>
-        </button>
+        <div class="portal-bar-mobile-actions">
+            <button class="action-button action-button--ghost portal-mobile-bills" id="mobile-pay-bills-button" type="button">Pay Bills</button>
+            <button class="portal-menu-toggle" id="portal-menu-toggle" type="button" aria-label="Open account menu" aria-expanded="false">
+                <span class="portal-menu-toggle__icon" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+                <span class="portal-menu-toggle__label">More</span>
+                <span class="sr-only">Open account menu</span>
+            </button>
+        </div>
     </div>
 
     <div id="mobile-account-menu" class="mobile-account-menu" hidden>
@@ -341,7 +347,7 @@
                                     <button class="action-button action-button--ghost" id="quick-transfer-launcher" type="button">Open transfer form</button>
                                 </div>
                             </div>
-                            <p class="section-copy">Pay bills, review direct deposit details, or transfer funds to other accounts from one account overview.</p>
+                            <p class="section-copy">Review direct deposit details, transfer funds to other accounts, and reach account statements from one overview.</p>
                             <div id="overview-service-cards" class="overview-service-cards"></div>
                             <div id="quick-transfer-summary" class="quick-transfer-summary"></div>
                             <div id="quick-transfer-panel" class="quick-transfer-panel" hidden>

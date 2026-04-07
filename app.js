@@ -500,13 +500,6 @@ function renderOverviewServiceCards() {
     const checking = getAccount("chk_primary");
     const services = [
         {
-            eyebrow: "Pay bills",
-            title: "Schedule payments",
-            detail: "Manage card and loan bills from one payment workspace with immediate or future-dated servicing.",
-            actionLabel: "Go to payments",
-            action: "payments"
-        },
-        {
             eyebrow: "Direct deposit",
             title: "Receive direct deposits",
             detail: `Use routing 021000021 and checking ${checking?.number || "•••• 0321"} for payroll and ACH credits.`,
@@ -519,6 +512,13 @@ function renderOverviewServiceCards() {
             detail: "Move money between your eligible accounts or prepare an external transfer without leaving the overview.",
             actionLabel: "Transfer funds",
             action: "internalTransfer"
+        },
+        {
+            eyebrow: "Statements",
+            title: "Review account statements",
+            detail: "Open recent statement output and download account records without leaving the secure workspace.",
+            actionLabel: "View statements",
+            action: "statements"
         }
     ];
 
@@ -548,6 +548,13 @@ function handleOverviewServiceAction(action) {
             "info"
         );
         render();
+        return;
+    }
+
+    if (action === "statements") {
+        setView("statements");
+        const statementsView = document.querySelector('[data-view="statements"]');
+        statementsView?.scrollIntoView({ behavior: "smooth", block: "start" });
         return;
     }
 
@@ -2481,6 +2488,10 @@ function bindEvents() {
 
     document.getElementById("return-home-button").addEventListener("click", signOutToHome);
     document.getElementById("logout-account-button").addEventListener("click", signOutToHome);
+    document.getElementById("mobile-pay-bills-button").addEventListener("click", () => {
+        toggleMobileAccountMenu(false);
+        handleOverviewServiceAction("payments");
+    });
     document.getElementById("portal-menu-toggle").addEventListener("click", () => toggleMobileAccountMenu());
     document.querySelectorAll("[data-mobile-menu-close]").forEach((button) => {
         button.addEventListener("click", () => toggleMobileAccountMenu(false));
