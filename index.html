@@ -227,7 +227,7 @@
             <div class="mobile-account-menu__head">
                 <div>
                     <p class="eyebrow">Account menu</p>
-                    <h3>Recent transfer activity</h3>
+                    <h3>Account options</h3>
                 </div>
                 <button class="mini-button" type="button" data-mobile-menu-close>Close</button>
             </div>
@@ -240,13 +240,6 @@
                     <button class="mini-button" type="button" data-mobile-view-target="statements">Statements</button>
                     <button class="mini-button" type="button" data-mobile-view-target="operations">Operations</button>
                 </div>
-            </div>
-            <div class="mobile-account-menu__section">
-                <div class="mobile-account-menu__section-head">
-                    <p class="mobile-account-menu__label">Transfers</p>
-                    <button class="mini-button" id="mobile-transfer-launcher" type="button">Quick transfer</button>
-                </div>
-                <div id="mobile-transfer-activity" class="compact-list"></div>
             </div>
             <div class="mobile-account-menu__section">
                 <div class="mobile-account-menu__section-head">
@@ -314,7 +307,7 @@
                             <h3 id="client-name">Gabriele Navisi</h3>
                             <p id="client-tier" class="poster-copy"></p>
                             <div class="poster-actions">
-                                <button class="action-button" id="poster-quick-transfer-button" type="button">Quick transfer</button>
+                                <button class="action-button" id="poster-quick-transfer-button" type="button">Quick Transfer</button>
                                 <p class="poster-inline-note">Initiate a transfer, track approvals, and keep the latest receipt within view.</p>
                             </div>
                         </div>
@@ -337,18 +330,19 @@
                     <div id="overview-highlights" class="overview-highlights reveal"></div>
 
                     <div class="workspace-grid overview-command-grid">
-                        <section class="section-block reveal">
+                    <section class="section-block reveal">
                             <div class="section-heading">
                                 <div>
-                                    <p class="eyebrow">Quick transfer</p>
-                                    <h3>Initiate a transfer</h3>
+                                    <p class="eyebrow">Everyday banking</p>
+                                    <h3>Move money and manage payments</h3>
                                 </div>
                                 <div class="heading-actions">
-                                    <span class="status-chip">Approval protected</span>
-                                    <button class="action-button action-button--ghost" id="quick-transfer-launcher" type="button">Open quick transfer</button>
+                                    <span class="status-chip">Digital services</span>
+                                    <button class="action-button action-button--ghost" id="quick-transfer-launcher" type="button">Open transfer form</button>
                                 </div>
                             </div>
-                            <p class="section-copy">Review funding details, confirm the receiving account, and follow the transfer through each approval stage.</p>
+                            <p class="section-copy">Pay bills, review direct deposit details, or transfer funds to other accounts from one account overview.</p>
+                            <div id="overview-service-cards" class="overview-service-cards"></div>
                             <div id="quick-transfer-summary" class="quick-transfer-summary"></div>
                             <div id="quick-transfer-panel" class="quick-transfer-panel" hidden>
                                 <div class="quick-transfer-panel-head">
@@ -509,18 +503,18 @@
                             </div>
                         </section>
 
-                        <section class="section-block reveal">
+                        <section class="section-block reveal" id="overview-history-panel">
                         <div class="section-heading">
                             <div>
-                                <p class="eyebrow">Transfer tracking</p>
-                                <h3>Progress, receipts, and rail readiness</h3>
+                                <p class="eyebrow">Recent transfers</p>
+                                <h3>Transfer history and status</h3>
                             </div>
                                 <button class="action-button action-button--ghost" id="home-download-receipt" type="button">Download latest receipt</button>
                         </div>
-                        <p class="section-copy">Approval status, receipt delivery, and routing readiness remain visible while the transfer moves through the workflow.</p>
+                        <p class="section-copy">Recent transfer history stays visible on the overview with the latest status, receipt, and approval activity.</p>
+                        <div id="home-transfer-status" class="compact-list"></div>
                         <div id="quick-transfer-progress" class="transfer-progress-stack"></div>
                         <div id="transfer-approval-panel" class="transfer-approval-panel"></div>
-                        <div id="home-transfer-status" class="compact-list"></div>
                         <div id="home-receipt-summary" class="compact-list compact-list--divider"></div>
                         <div id="transfer-delivery-preview" class="compact-list compact-list--divider"></div>
                     </section>

@@ -1228,11 +1228,19 @@ body.mobile-account-menu-open {
     gap: 12px;
 }
 
+.overview-service-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
 .quick-transfer-summary {
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     margin-bottom: 18px;
 }
 
+.service-option-card,
 .quick-summary-card,
 .transfer-progress-card {
     padding: 16px 18px;
@@ -1243,6 +1251,7 @@ body.mobile-account-menu-open {
         rgba(8, 15, 22, 0.78);
 }
 
+.service-option-card strong,
 .quick-summary-card strong,
 .transfer-progress-card h4 {
     font-family: var(--display);
@@ -1250,6 +1259,7 @@ body.mobile-account-menu-open {
     letter-spacing: -0.03em;
 }
 
+.service-option-card strong,
 .quick-summary-card strong,
 .transfer-progress-card h4 {
     display: block;
@@ -1257,11 +1267,16 @@ body.mobile-account-menu-open {
     font-size: 1.2rem;
 }
 
+.service-option-card p,
 .quick-summary-card span,
 .transfer-progress-card p,
 .transfer-progress-card small {
     color: var(--muted);
     line-height: 1.5;
+}
+
+.service-option-card p {
+    margin: 10px 0 14px;
 }
 
 .quick-transfer-panel {
@@ -1998,6 +2013,7 @@ body[data-portal-view="account"] .section-heading h4 {
     font-size: 1.12rem;
 }
 
+body[data-portal-view="account"] .service-option-card,
 body[data-portal-view="account"] .quick-transfer-panel,
 body[data-portal-view="account"] .quick-summary-card,
 body[data-portal-view="account"] .transfer-progress-card,
@@ -2564,6 +2580,7 @@ body[data-portal-view="account"] .hold-item {
 
     body[data-portal-view="account"] .workspace-grid,
     body[data-portal-view="account"] .overview-highlights,
+    body[data-portal-view="account"] .overview-service-cards,
     body[data-portal-view="account"] .metric-ribbon,
     body[data-portal-view="account"] .control-form,
     body[data-portal-view="account"] .rail-panel,
@@ -2716,7 +2733,6 @@ body[data-portal-view="account"] .hold-item {
     body[data-portal-view="account"] .inspector,
     body[data-portal-view="account"] #overview-activity-panel,
     body[data-portal-view="account"] #overview-balances-panel,
-    body[data-portal-view="account"] .overview-command-grid > .section-block:last-child,
     body[data-portal-view="account"] .poster-inline-note {
         display: none;
     }
@@ -2763,16 +2779,21 @@ body[data-portal-view="account"] .hold-item {
     }
 
     body[data-portal-view="account"] .overview-highlight-card:nth-child(n + 3),
-    body[data-portal-view="account"] .quick-summary-card:nth-child(n + 3) {
+    body[data-portal-view="account"] .quick-summary-card:nth-child(n + 3),
+    body[data-portal-view="account"] #quick-transfer-progress,
+    body[data-portal-view="account"] #home-receipt-summary,
+    body[data-portal-view="account"] #transfer-delivery-preview {
         display: none;
     }
 
     body[data-portal-view="account"] .overview-highlight-card,
+    body[data-portal-view="account"] .service-option-card,
     body[data-portal-view="account"] .quick-summary-card {
         padding: 14px 16px;
     }
 
     body[data-portal-view="account"] .overview-highlight-card p,
+    body[data-portal-view="account"] .service-option-card p,
     body[data-portal-view="account"] .quick-summary-card span:last-child,
     body[data-portal-view="account"] .section-copy {
         font-size: 0.93rem;

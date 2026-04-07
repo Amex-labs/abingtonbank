@@ -463,33 +463,6 @@ function toggleMobileAccountMenu(forceOpen) {
     renderPortalChrome();
 }
 
-function buildMobileTransferActivity() {
-    if (state.quickTransfers.length) {
-        return state.quickTransfers.slice(0, 4).map((transfer) => ({
-            title: transfer.destinationLabel,
-            subtitle: `${transfer.railLabel} • ${titleCaseStatus(transfer.status)}`,
-            meta: `${transfer.receiptId} • ${transfer.destinationAccountMasked || "Account on file"} • ${formatDateTime(transfer.updatedAt)}`,
-            amountLabel: formatMoney(transfer.amount)
-        }));
-    }
-
-    if (state.scheduledTransfers.length) {
-        return state.scheduledTransfers.slice(0, 4).map((transfer) => ({
-            title: transfer.beneficiaryName || labelFor(transfer.toAccountId),
-            subtitle: `${getRailLabel(transfer.railType)} • Scheduled`,
-            meta: `${formatShortDate(`${transfer.effectiveDate}T00:00:00Z`)} • ${transfer.reference || "Transfer instruction queued"}`,
-            amountLabel: formatMoney(transfer.amount)
-        }));
-    }
-
-    return state.timeline.slice(0, 4).map((event) => ({
-        title: event.title,
-        subtitle: event.body,
-        meta: formatDateTime(event.timestamp),
-        amountLabel: event.amountLabel
-    }));
-}
-
 function buildMobileAccountSnapshot() {
     const totals = getTotals();
     const nextScheduled = [...state.scheduledTransfers, ...state.scheduledPayments]
@@ -516,6 +489,82 @@ function buildMobileAccountSnapshot() {
             amountLabel: nextScheduled ? formatMoney(nextScheduled.amount) : "Clear"
         }
     ];
+}
+
+function renderOverviewServiceCards() {
+    const target = document.getElementById("overview-service-cards");
+    if (!target) {
+        return;
+    }
+
+    const checking = getAccount("chk_primary");
+    const services = [
+        {
+            eyebrow: "Pay bills",
+            title: "Schedule payments",
+            detail: "Manage card and loan bills from one payment workspace with immediate or future-dated servicing.",
+            actionLabel: "Go to payments",
+            action: "payments"
+        },
+        {
+            eyebrow: "Direct deposit",
+            title: "Receive direct deposits",
+            detail: `Use routing 021000021 and checking ${checking?.number || "•••• 0321"} for payroll and ACH credits.`,
+            actionLabel: "View deposit details",
+            action: "directDeposit"
+        },
+        {
+            eyebrow: "Account transfers",
+            title: "Transfer funds conveniently",
+            detail: "Move money between your eligible accounts or prepare an external transfer without leaving the overview.",
+            actionLabel: "Transfer funds",
+            action: "internalTransfer"
+        }
+    ];
+
+    target.innerHTML = services.map((service) => `
+        <article class="service-option-card">
+            <span class="detail-kicker">${service.eyebrow}</span>
+            <strong>${service.title}</strong>
+            <p>${service.detail}</p>
+            <button class="mini-button" type="button" data-overview-service="${service.action}">${service.actionLabel}</button>
+        </article>
+    `).join("");
+}
+
+function handleOverviewServiceAction(action) {
+    if (action === "payments") {
+        setView("payments");
+        const paymentsView = document.querySelector('[data-view="payments"]');
+        paymentsView?.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+    }
+
+    if (action === "directDeposit") {
+        const checking = getAccount("chk_primary");
+        pushNotification(
+            "Direct deposit details ready",
+            `Use routing 021000021 with ${checking?.label || "Premier Checking"} ${checking?.number || ""} for incoming payroll and ACH credits.`,
+            "info"
+        );
+        render();
+        return;
+    }
+
+    const rail = document.getElementById("transfer-rail");
+    const fromAccount = document.getElementById("transfer-from");
+    const toAccount = document.getElementById("transfer-to");
+    if (rail) {
+        rail.value = "internal";
+    }
+    if (fromAccount) {
+        fromAccount.value = "chk_primary";
+    }
+    if (toAccount) {
+        toAccount.value = "svg_reserve";
+    }
+    updateTransferRailUI();
+    toggleQuickTransferPanel(true);
 }
 
 function addDays(date, days) {
@@ -1557,9 +1606,8 @@ function renderTimeline() {
 function renderMobileAccountMenu() {
     const menu = document.getElementById("mobile-account-menu");
     const toggle = document.getElementById("portal-menu-toggle");
-    const feedTarget = document.getElementById("mobile-transfer-activity");
     const snapshotTarget = document.getElementById("mobile-account-snapshot");
-    if (!menu || !toggle || !feedTarget || !snapshotTarget) {
+    if (!menu || !toggle || !snapshotTarget) {
         return;
     }
 
@@ -1570,29 +1618,6 @@ function renderMobileAccountMenu() {
     toggle.hidden = !isAccountView;
     toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
     document.body.classList.toggle("mobile-account-menu-open", isOpen);
-
-    const items = buildMobileTransferActivity();
-    feedTarget.innerHTML = items.length ? items.map((item) => `
-        <article class="compact-item">
-            <div class="compact-head">
-                <div>
-                    <strong>${item.title}</strong>
-                    <span>${item.subtitle}</span>
-                </div>
-                <strong>${item.amountLabel}</strong>
-            </div>
-            <span>${item.meta}</span>
-        </article>
-    `).join("") : `
-        <article class="compact-item">
-            <div class="compact-head">
-                <div>
-                    <strong>No transfer activity yet</strong>
-                    <span>Start a transfer from the portfolio to populate recent activity here.</span>
-                </div>
-            </div>
-        </article>
-    `;
 
     const snapshots = buildMobileAccountSnapshot();
     snapshotTarget.innerHTML = snapshots.map((item) => `
@@ -1810,7 +1835,7 @@ function renderOverviewHighlights() {
                 value: latestTransfer ? titleCaseStatus(latestTransfer.status) : "Ready",
                 detail: latestTransfer
                     ? `${formatMoney(latestTransfer.amount)} to ${latestTransfer.destinationLabel} remains in progress.`
-                    : "Quick transfer is ready from the account overview.",
+                    : "Transfer form is ready from the account overview.",
                 tone: latestTransfer ? "default" : "success"
             }
     ];
@@ -1864,7 +1889,7 @@ function renderQuickTransferWorkspace() {
     `;
 
     document.getElementById("quick-transfer-panel").hidden = !state.quickTransferUi.open;
-    document.getElementById("quick-transfer-launcher").textContent = state.quickTransferUi.open ? "Hide quick transfer" : "Open quick transfer";
+    document.getElementById("quick-transfer-launcher").textContent = state.quickTransferUi.open ? "Hide transfer form" : "Open transfer form";
     document.getElementById("poster-quick-transfer-button").textContent = "Quick Transfer";
     document.getElementById("home-download-receipt").disabled = !state.lastReceiptText && !state.lastReceiptDelivery?.pdfUrl;
     if (transferSubmitButton) {
@@ -1881,7 +1906,7 @@ function renderQuickTransferProgress() {
                 <div class="transfer-progress-head">
                     <div>
                         <p class="eyebrow">No live transfer</p>
-                        <h4>Quick transfer is ready</h4>
+                        <h4>Transfer form is ready</h4>
                         <p>Open the homepage transfer workspace to submit a same-day transfer with beneficiary details, routing validation, staged approval codes, and a downloadable receipt.</p>
                     </div>
                 </div>
@@ -2035,40 +2060,42 @@ function renderTransferApprovalPanel() {
 }
 
 function renderHomeTransferStatus() {
-    const railCards = [
-        {
-            label: "Internal transfers",
-            status: "Active",
-            detail: "Homepage quick transfer validates beneficiary details, updates balances immediately, pauses each stage for a server-generated approval code, and prepares receipt delivery records."
-        },
-        {
-            label: "ACH",
-            status: getVerification("ach").status,
-            detail: `${getVerification("ach").provider} • ${getVerification("ach").note}`
-        },
-        {
-            label: "Fedwire",
-            status: getVerification("fedwire").status,
-            detail: `${getVerification("fedwire").provider} • ${getVerification("fedwire").note}`
-        },
-        {
-            label: "Card network",
-            status: getVerification("cardNetwork").status,
-            detail: `${getVerification("cardNetwork").provider} • ${getVerification("cardNetwork").note}`
-        }
-    ];
+    const history = [
+        ...state.quickTransfers.map((transfer) => ({
+            title: transfer.destinationLabel,
+            detail: `${transfer.railLabel} • ${titleCaseStatus(transfer.finalized ? "successful" : transfer.status)} • ${transfer.fromLabel}`,
+            meta: `${transfer.receiptId} • ${formatDateTime(transfer.updatedAt)}`,
+            value: formatMoney(transfer.amount)
+        })),
+        ...state.scheduledTransfers.map((transfer) => ({
+            title: transfer.beneficiaryName || labelFor(transfer.toAccountId),
+            detail: `${getRailLabel(transfer.railType)} • Scheduled • ${labelFor(transfer.fromAccountId)}`,
+            meta: `${formatShortDate(`${transfer.effectiveDate}T00:00:00Z`)} • ${transfer.reference || "Transfer instruction queued"}`,
+            value: formatMoney(transfer.amount)
+        }))
+    ].slice(0, 4);
 
-    document.getElementById("home-transfer-status").innerHTML = railCards.map((item) => `
+    document.getElementById("home-transfer-status").innerHTML = history.length ? history.map((item) => `
         <article class="compact-item">
             <div class="compact-head">
                 <div>
-                    <strong>${item.label}</strong>
+                    <strong>${item.title}</strong>
                     <span>${item.detail}</span>
                 </div>
-                <strong>${item.status}</strong>
+                <strong>${item.value}</strong>
+            </div>
+            <span>${item.meta}</span>
+        </article>
+    `).join("") : `
+        <article class="compact-item">
+            <div class="compact-head">
+                <div>
+                    <strong>No transfers posted yet</strong>
+                    <span>Recent transfer history will appear here after you submit or schedule a transfer.</span>
+                </div>
             </div>
         </article>
-    `).join("");
+    `;
 }
 
 function renderHomeReceiptSummary() {
@@ -2359,6 +2386,7 @@ function render() {
     renderSelectOptions();
     renderHeader();
     renderOverviewHighlights();
+    renderOverviewServiceCards();
     renderQuickTransferWorkspace();
     renderAccounts();
     renderTimeline();
@@ -2469,10 +2497,16 @@ function bindEvents() {
             signOutToHome();
         });
     });
-    document.getElementById("mobile-transfer-launcher").addEventListener("click", () => {
-        toggleMobileAccountMenu(false);
-        setView("overview");
-        toggleQuickTransferPanel(true);
+    document.getElementById("overview-service-cards").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-overview-service]");
+        if (!button) {
+            return;
+        }
+        try {
+            handleOverviewServiceAction(button.dataset.overviewService);
+        } catch (error) {
+            showError(error);
+        }
     });
 
     document.querySelectorAll(".nav-button").forEach((button) => {
