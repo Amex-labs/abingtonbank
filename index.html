@@ -205,7 +205,7 @@
 
     <div id="account-portal" class="portal-shell" hidden>
     <div class="portal-bar">
-        <div>
+        <div class="portal-bar-copy">
             <p class="eyebrow">Customer account</p>
             <strong>Checking Account</strong>
         </div>
@@ -213,6 +213,53 @@
             <button class="action-button action-button--ghost" id="return-home-button" type="button">Homepage</button>
             <button class="action-button" id="logout-account-button" type="button">Logout</button>
         </div>
+        <button class="portal-menu-toggle" id="portal-menu-toggle" type="button" aria-label="Open account menu" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span class="sr-only">Open account menu</span>
+        </button>
+    </div>
+
+    <div id="mobile-account-menu" class="mobile-account-menu" hidden>
+        <button class="mobile-account-menu__scrim" type="button" data-mobile-menu-close aria-label="Close account menu"></button>
+        <aside class="mobile-account-menu__panel" aria-label="Account menu">
+            <div class="mobile-account-menu__head">
+                <div>
+                    <p class="eyebrow">Account menu</p>
+                    <h3>Recent transfer activity</h3>
+                </div>
+                <button class="mini-button" type="button" data-mobile-menu-close>Close</button>
+            </div>
+            <div class="mobile-account-menu__section">
+                <p class="mobile-account-menu__label">Navigate</p>
+                <div class="mobile-account-menu__nav">
+                    <button class="mini-button" type="button" data-mobile-view-target="overview">Portfolio</button>
+                    <button class="mini-button" type="button" data-mobile-view-target="payments">Payments</button>
+                    <button class="mini-button" type="button" data-mobile-view-target="cards">Cards</button>
+                    <button class="mini-button" type="button" data-mobile-view-target="statements">Statements</button>
+                    <button class="mini-button" type="button" data-mobile-view-target="operations">Operations</button>
+                </div>
+            </div>
+            <div class="mobile-account-menu__section">
+                <div class="mobile-account-menu__section-head">
+                    <p class="mobile-account-menu__label">Transfers</p>
+                    <button class="mini-button" id="mobile-transfer-launcher" type="button">Quick transfer</button>
+                </div>
+                <div id="mobile-transfer-activity" class="compact-list"></div>
+            </div>
+            <div class="mobile-account-menu__section">
+                <div class="mobile-account-menu__section-head">
+                    <p class="mobile-account-menu__label">Account snapshot</p>
+                    <span class="status-chip">Live</span>
+                </div>
+                <div id="mobile-account-snapshot" class="compact-list compact-list--divider"></div>
+            </div>
+            <div class="mobile-account-menu__section mobile-account-menu__section--actions">
+                <button class="action-button action-button--ghost" type="button" data-mobile-account-action="home">Homepage</button>
+                <button class="action-button" type="button" data-mobile-account-action="logout">Logout</button>
+            </div>
+        </aside>
     </div>
 
     <div class="app-shell">
@@ -480,7 +527,7 @@
                 </div>
 
                     <div class="workspace-grid">
-                        <section class="section-block reveal">
+                        <section class="section-block reveal" id="overview-balances-panel">
                             <div class="section-heading">
                                 <div>
                                     <p class="eyebrow">Accounts</p>
@@ -492,7 +539,7 @@
                             <div id="allocation-bar" class="allocation-bar" aria-label="Account allocation"></div>
                         </section>
 
-                        <section class="section-block reveal">
+                        <section class="section-block reveal" id="overview-activity-panel">
                             <div class="section-heading">
                                 <div>
                                     <p class="eyebrow">Activity</p>

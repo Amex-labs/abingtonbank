@@ -40,7 +40,8 @@ const state = {
         authPanel: "customer",
         sessionRole: "",
         userEmail: "",
-        createdProfile: null
+        createdProfile: null,
+        mobileMenuOpen: false
     },
     backend: {
         online: false,
@@ -295,6 +296,7 @@ function setPortalView(view, role = state.portal.sessionRole, userEmail = state.
     state.portal.view = view;
     state.portal.sessionRole = role || "";
     state.portal.userEmail = userEmail || "";
+    state.portal.mobileMenuOpen = false;
     document.body.dataset.portalView = view;
     savePortalSession();
 }
@@ -453,6 +455,67 @@ function titleCaseStatus(status) {
     return String(status || "")
         .replace(/([A-Z])/g, " $1")
         .replace(/^./, (character) => character.toUpperCase());
+}
+
+function toggleMobileAccountMenu(forceOpen) {
+    const nextOpen = typeof forceOpen === "boolean" ? forceOpen : !state.portal.mobileMenuOpen;
+    state.portal.mobileMenuOpen = nextOpen;
+    renderPortalChrome();
+}
+
+function buildMobileTransferActivity() {
+    if (state.quickTransfers.length) {
+        return state.quickTransfers.slice(0, 4).map((transfer) => ({
+            title: transfer.destinationLabel,
+            subtitle: `${transfer.railLabel} • ${titleCaseStatus(transfer.status)}`,
+            meta: `${transfer.receiptId} • ${transfer.destinationAccountMasked || "Account on file"} • ${formatDateTime(transfer.updatedAt)}`,
+            amountLabel: formatMoney(transfer.amount)
+        }));
+    }
+
+    if (state.scheduledTransfers.length) {
+        return state.scheduledTransfers.slice(0, 4).map((transfer) => ({
+            title: transfer.beneficiaryName || labelFor(transfer.toAccountId),
+            subtitle: `${getRailLabel(transfer.railType)} • Scheduled`,
+            meta: `${formatShortDate(`${transfer.effectiveDate}T00:00:00Z`)} • ${transfer.reference || "Transfer instruction queued"}`,
+            amountLabel: formatMoney(transfer.amount)
+        }));
+    }
+
+    return state.timeline.slice(0, 4).map((event) => ({
+        title: event.title,
+        subtitle: event.body,
+        meta: formatDateTime(event.timestamp),
+        amountLabel: event.amountLabel
+    }));
+}
+
+function buildMobileAccountSnapshot() {
+    const totals = getTotals();
+    const nextScheduled = [...state.scheduledTransfers, ...state.scheduledPayments]
+        .filter((item) => (item.effectiveDate || item.runDate) >= formatInputDate(state.currentDate))
+        .sort((left, right) => String(left.effectiveDate || left.runDate).localeCompare(String(right.effectiveDate || right.runDate)))[0];
+
+    return [
+        {
+            title: "Available to move",
+            subtitle: "Eligible deposit balances ready for transfer.",
+            meta: `${state.accounts.filter((account) => account.class === "asset").length} funding accounts`,
+            amountLabel: formatMoney(totals.availableToMove)
+        },
+        {
+            title: "Premier checking",
+            subtitle: "Primary operating account",
+            meta: `${getAccount("chk_primary")?.number || "Checking"} • live balance`,
+            amountLabel: formatMoney(getAccount("chk_primary")?.balance || 0)
+        },
+        {
+            title: "Next scheduled item",
+            subtitle: nextScheduled ? (nextScheduled.memo || "Scheduled activity") : "No scheduled items due.",
+            meta: nextScheduled ? formatShortDate(`${nextScheduled.effectiveDate || nextScheduled.runDate}T00:00:00Z`) : "Queue clear",
+            amountLabel: nextScheduled ? formatMoney(nextScheduled.amount) : "Clear"
+        }
+    ];
 }
 
 function addDays(date, days) {
@@ -1491,6 +1554,65 @@ function renderTimeline() {
     `).join("");
 }
 
+function renderMobileAccountMenu() {
+    const menu = document.getElementById("mobile-account-menu");
+    const toggle = document.getElementById("portal-menu-toggle");
+    const feedTarget = document.getElementById("mobile-transfer-activity");
+    const snapshotTarget = document.getElementById("mobile-account-snapshot");
+    if (!menu || !toggle || !feedTarget || !snapshotTarget) {
+        return;
+    }
+
+    const isAccountView = state.portal.view === "account";
+    const isOpen = isAccountView && state.portal.mobileMenuOpen;
+    menu.hidden = !isOpen;
+    menu.classList.toggle("mobile-account-menu--open", isOpen);
+    toggle.hidden = !isAccountView;
+    toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    document.body.classList.toggle("mobile-account-menu-open", isOpen);
+
+    const items = buildMobileTransferActivity();
+    feedTarget.innerHTML = items.length ? items.map((item) => `
+        <article class="compact-item">
+            <div class="compact-head">
+                <div>
+                    <strong>${item.title}</strong>
+                    <span>${item.subtitle}</span>
+                </div>
+                <strong>${item.amountLabel}</strong>
+            </div>
+            <span>${item.meta}</span>
+        </article>
+    `).join("") : `
+        <article class="compact-item">
+            <div class="compact-head">
+                <div>
+                    <strong>No transfer activity yet</strong>
+                    <span>Start a transfer from the portfolio to populate recent activity here.</span>
+                </div>
+            </div>
+        </article>
+    `;
+
+    const snapshots = buildMobileAccountSnapshot();
+    snapshotTarget.innerHTML = snapshots.map((item) => `
+        <article class="compact-item">
+            <div class="compact-head">
+                <div>
+                    <strong>${item.title}</strong>
+                    <span>${item.subtitle}</span>
+                </div>
+                <strong>${item.amountLabel}</strong>
+            </div>
+            <span>${item.meta}</span>
+        </article>
+    `).join("");
+
+    document.querySelectorAll("[data-mobile-view-target]").forEach((button) => {
+        button.classList.toggle("mini-button--active", button.dataset.mobileViewTarget === state.activeView);
+    });
+}
+
 function renderScheduled() {
     const scheduledItems = [
         ...state.scheduledPayments.map((payment) => ({
@@ -2135,6 +2257,7 @@ function renderPortalChrome() {
     accountPortal.hidden = state.portal.view !== "account";
 
     document.body.dataset.portalView = state.portal.view;
+    renderMobileAccountMenu();
 
     document.querySelectorAll("[data-auth-panel-target]").forEach((button) => {
         button.classList.toggle("auth-tab--active", button.dataset.authPanelTarget === state.portal.authPanel && button.classList.contains("auth-tab"));
@@ -2219,12 +2342,17 @@ function updateTransferRailUI() {
 
 function setView(viewName) {
     state.activeView = viewName;
+    state.portal.mobileMenuOpen = false;
     document.querySelectorAll(".view").forEach((view) => {
         view.classList.toggle("view--active", view.dataset.view === viewName);
     });
     document.querySelectorAll(".nav-button").forEach((button) => {
         button.classList.toggle("nav-button--active", button.dataset.viewTarget === viewName);
     });
+    document.querySelectorAll("[data-mobile-view-target]").forEach((button) => {
+        button.classList.toggle("mini-button--active", button.dataset.mobileViewTarget === viewName);
+    });
+    renderMobileAccountMenu();
 }
 
 function render() {
@@ -2325,6 +2453,27 @@ function bindEvents() {
 
     document.getElementById("return-home-button").addEventListener("click", signOutToHome);
     document.getElementById("logout-account-button").addEventListener("click", signOutToHome);
+    document.getElementById("portal-menu-toggle").addEventListener("click", () => toggleMobileAccountMenu());
+    document.querySelectorAll("[data-mobile-menu-close]").forEach((button) => {
+        button.addEventListener("click", () => toggleMobileAccountMenu(false));
+    });
+    document.querySelectorAll("[data-mobile-view-target]").forEach((button) => {
+        button.addEventListener("click", () => setView(button.dataset.mobileViewTarget));
+    });
+    document.querySelectorAll("[data-mobile-account-action]").forEach((button) => {
+        button.addEventListener("click", () => {
+            if (button.dataset.mobileAccountAction === "home") {
+                signOutToHome();
+                return;
+            }
+            signOutToHome();
+        });
+    });
+    document.getElementById("mobile-transfer-launcher").addEventListener("click", () => {
+        toggleMobileAccountMenu(false);
+        setView("overview");
+        toggleQuickTransferPanel(true);
+    });
 
     document.querySelectorAll(".nav-button").forEach((button) => {
         button.addEventListener("click", () => setView(button.dataset.viewTarget));
