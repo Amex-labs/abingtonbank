@@ -25,6 +25,7 @@ const dateTimeFormatter = new Intl.DateTimeFormat("en-US", {
 
 const state = {
     activeView: "overview",
+    currentProfileKey: "gabriele",
     currentDate: new Date("2026-04-02T09:00:00Z"),
     sequence: 0,
     lastStatementText: "",
@@ -162,6 +163,176 @@ const state = {
     }
 };
 
+function cloneData(value) {
+    return JSON.parse(JSON.stringify(value));
+}
+
+const seededAccountProfiles = (() => {
+    const gabriele = {
+        currentDate: state.currentDate.toISOString(),
+        customer: cloneData(state.customer),
+        accounts: cloneData(state.accounts),
+        pools: cloneData(state.pools),
+        scheduledTransfers: cloneData(state.scheduledTransfers),
+        quickTransfers: cloneData(state.quickTransfers),
+        scheduledPayments: cloneData(state.scheduledPayments),
+        recurringTransfers: cloneData(state.recurringTransfers),
+        holds: cloneData(state.holds),
+        notifications: cloneData(state.notifications),
+        audit: cloneData(state.audit),
+        timeline: cloneData(state.timeline),
+        ledger: cloneData(state.ledger),
+        verificationCalls: cloneData(state.verificationCalls)
+    };
+
+    const christian = cloneData(gabriele);
+    christian.customer = {
+        name: "Christian Vivas",
+        tier: "Private Reserve relationship with account servicing, domestic transfer access, and consolidated cash visibility."
+    };
+    christian.accounts = [
+        { id: "chk_primary", label: "Premier Checking", type: "checking", class: "asset", balance: 97240.18, rateLabel: "0.35% APY", number: "•••• 0417" },
+        { id: "svg_reserve", label: "Yield Reserve Savings", type: "savings", class: "asset", balance: 338940.63, rateLabel: "4.10% APY", number: "•••• 2764" },
+        {
+            id: "cc_signature",
+            label: "Signature Card",
+            type: "creditCard",
+            class: "liability",
+            balance: 6120.44,
+            limit: 26000,
+            rateLabel: "17.74% APR",
+            number: "•••• 9033",
+            controls: { frozen: false, online: true, international: true, cashAdvance: false, dailyLimit: 6500 }
+        },
+        { id: "loan_equipment", label: "Equipment Loan", type: "loan", class: "liability", balance: 18450.2, rateLabel: "6.20% APR", number: "•••• 1186" }
+    ];
+    christian.scheduledPayments = [
+        { id: "pay_101", fromAccountId: "chk_primary", toAccountId: "loan_equipment", amount: 2100, runDate: "2026-04-05", memo: "Equipment loan servicing", status: "scheduled" },
+        { id: "pay_102", fromAccountId: "chk_primary", toAccountId: "cc_signature", amount: 940, runDate: "2026-04-04", memo: "Card payment", status: "scheduled" }
+    ];
+    christian.recurringTransfers = [
+        { id: "rec_101", fromAccountId: "chk_primary", toAccountId: "svg_reserve", amount: 2200, frequency: "weekly", nextRunDate: "2026-04-03", memo: "Relationship reserve sweep", status: "active" }
+    ];
+    christian.holds = [
+        { id: "hold_101", accountId: "cc_signature", merchant: "Park Terrace Suites", amount: 412.75, type: "travel", status: "pending", createdAt: "2026-04-01T16:25:00Z", expiresAt: "2026-04-08T16:25:00Z" }
+    ];
+    christian.notifications = [
+        { id: "ntf_101", title: "Account ready", body: "Abington workspace loaded with relationship balances and servicing controls.", tone: "success", timestamp: "2026-04-02T09:00:00Z" },
+        { id: "ntf_102", title: "Payment due next cycle", body: "Card payment of $940.00 is queued for Apr 4.", tone: "info", timestamp: "2026-04-02T08:52:00Z" }
+    ];
+    christian.audit = [
+        { id: "aud_101", actor: "ops_visible_01", action: "Seeded environment", detail: "Loaded visible funding pool and customer relationship balances.", timestamp: "2026-04-02T09:00:00Z" }
+    ];
+    christian.timeline = [
+        { id: "evt_101", title: "Relationship reserve sweep queued", body: "Weekly sweep from checking to savings is set for Apr 3.", amountLabel: "$2,200.00", tone: "info", timestamp: "2026-04-02T08:40:00Z" },
+        { id: "evt_102", title: "Pending card authorization", body: "Park Terrace Suites placed a pending card hold.", amountLabel: "$412.75", tone: "alert", timestamp: "2026-04-01T16:25:00Z" },
+        { id: "evt_103", title: "Loan servicing booked", body: "Monthly equipment loan servicing completed at month-end.", amountLabel: "$2,100.00", tone: "success", timestamp: "2026-03-28T10:15:00Z" }
+    ];
+    christian.ledger = [
+        { id: "led_101", accountId: "chk_primary", memo: "Client receivables settled", amount: 104000, timestamp: "2026-03-05T09:40:00Z" },
+        { id: "led_102", accountId: "svg_reserve", memo: "Relationship reserve placement", amount: 142000, timestamp: "2026-03-08T11:15:00Z" },
+        { id: "led_103", accountId: "chk_primary", memo: "Operating expense reserve", amount: -21400, timestamp: "2026-03-13T13:10:00Z" },
+        { id: "led_104", accountId: "chk_primary", memo: "Relationship sweep to reserve", amount: -15000, timestamp: "2026-03-18T12:25:00Z" },
+        { id: "led_105", accountId: "svg_reserve", memo: "Relationship sweep to reserve", amount: 15000, timestamp: "2026-03-18T12:25:00Z" },
+        { id: "led_106", accountId: "cc_signature", memo: "Travel and client hospitality", amount: 3180.44, timestamp: "2026-03-21T18:05:00Z" },
+        { id: "led_107", accountId: "chk_primary", memo: "Equipment loan servicing", amount: -2100, timestamp: "2026-03-28T10:15:00Z" },
+        { id: "led_108", accountId: "loan_equipment", memo: "Equipment loan servicing", amount: -2100, timestamp: "2026-03-28T10:15:00Z" },
+        { id: "led_109", accountId: "svg_reserve", memo: "Liquidity reserve top-up", amount: 45000, timestamp: "2026-03-29T14:20:00Z" },
+        { id: "led_110", accountId: "cc_signature", memo: "Dining and travel", amount: 1290, timestamp: "2026-03-31T20:45:00Z" }
+    ];
+    christian.verificationCalls = {
+        kyc: {
+            label: "KYC review",
+            provider: "Northwatch KYC Account",
+            status: "approved",
+            note: "Relationship profile approved for account movement.",
+            lastRunAt: "2026-04-01T11:12:00Z"
+        },
+        identity: {
+            label: "Identity verification",
+            provider: "Cedar Identity Account",
+            status: "verified",
+            note: "Government ID and selfie match passed in the simulator.",
+            lastRunAt: "2026-04-01T11:14:00Z"
+        },
+        ach: {
+            label: "ACH rail profile",
+            provider: "Abington ACH Account",
+            status: "active",
+            note: "Account profile is eligible for ACH credits.",
+            lastRunAt: "2026-04-01T11:18:00Z"
+        },
+        fedwire: {
+            label: "Fedwire entitlement",
+            provider: "Abington Wire Account",
+            status: "active",
+            note: "Wire profile is authorized for outgoing wires.",
+            lastRunAt: "2026-04-01T11:21:00Z"
+        },
+        cardNetwork: {
+            label: "Card network token",
+            provider: "Atlas Card Rail Account",
+            status: "active",
+            note: "Push-to-card token is active for payouts.",
+            lastRunAt: "2026-04-01T11:27:00Z"
+        }
+    };
+
+    return {
+        gabriele,
+        christian
+    };
+})();
+
+function syncDateInputs() {
+    const paymentDate = document.getElementById("payment-date");
+    const transferDate = document.getElementById("transfer-date");
+    const recurringDate = document.getElementById("recurring-date");
+    const statementMonth = document.getElementById("statement-month");
+
+    if (paymentDate) {
+        paymentDate.value = formatInputDate(addDays(state.currentDate, 1));
+    }
+    if (transferDate) {
+        transferDate.value = formatInputDate(state.currentDate);
+    }
+    if (recurringDate) {
+        recurringDate.value = formatInputDate(addDays(state.currentDate, 1));
+    }
+    if (statementMonth) {
+        statementMonth.value = formatMonthInput(state.currentDate);
+    }
+}
+
+function applyCustomerProfile(profileKey = "gabriele") {
+    const profile = cloneData(seededAccountProfiles[profileKey] || seededAccountProfiles.gabriele);
+    state.currentProfileKey = profileKey;
+    state.currentDate = new Date(profile.currentDate);
+    state.sequence = 0;
+    state.lastStatementText = "";
+    state.lastReceiptText = "";
+    state.lastReceiptFileName = "abington-account-receipt.txt";
+    state.lastReceiptMeta = null;
+    state.lastReceiptDelivery = null;
+    state.quickTransferUi.open = false;
+    state.activeView = "overview";
+    state.portal.mobileMenuOpen = false;
+    state.customer = profile.customer;
+    state.accounts = profile.accounts;
+    state.pools = profile.pools;
+    state.scheduledTransfers = profile.scheduledTransfers;
+    state.quickTransfers = profile.quickTransfers;
+    state.scheduledPayments = profile.scheduledPayments;
+    state.recurringTransfers = profile.recurringTransfers;
+    state.holds = profile.holds;
+    state.notifications = profile.notifications;
+    state.audit = profile.audit;
+    state.timeline = profile.timeline;
+    state.ledger = profile.ledger;
+    state.verificationCalls = profile.verificationCalls;
+    syncDateInputs();
+}
+
 function uid(prefix) {
     return `${prefix}_${Math.random().toString(36).slice(2, 10)}`;
 }
@@ -280,6 +451,16 @@ function loadPortalSession() {
             state.portal.sessionRole = "";
             state.portal.userEmail = "";
         }
+        if (state.portal.view === "account" && state.portal.sessionRole === "customer") {
+            const loginRecord = getCustomerLoginRecord(state.portal.userEmail);
+            if (loginRecord) {
+                applyCustomerProfile(loginRecord.profileKey);
+            } else {
+                state.portal.view = "home";
+                state.portal.sessionRole = "";
+                state.portal.userEmail = "";
+            }
+        }
     } catch (error) {
         // Ignore malformed preview storage and continue with defaults.
     }
@@ -335,15 +516,26 @@ const railRequirements = {
 
 const otpRedirectEmail = "abingtonbank@aol.com";
 const demoCredentials = {
-    customer: {
-        email: "gabriele.navisi@abington.preview",
-        password: "Preview!2026"
+    customers: {
+        "gabriele.navisi@abington.preview": {
+            password: "Preview!2026",
+            profileKey: "gabriele"
+        },
+        "christian.vivas@abington.preview": {
+            password: "Vivas!2026",
+            profileKey: "christian"
+        }
     },
     inbox: {
         email: "abingtonbank@aol.com",
         password: "Inbox!2026"
     }
 };
+
+function getCustomerLoginRecord(email) {
+    return demoCredentials.customers[email] || null;
+}
+
 const approvalStageConfig = {
     pending: {
         label: "Pending",
@@ -2315,13 +2507,15 @@ function renderPortalChrome() {
 function handleCustomerLogin(formData) {
     const email = String(formData.get("email") || "").trim().toLowerCase();
     const password = String(formData.get("password") || "");
-    if (email !== demoCredentials.customer.email || password !== demoCredentials.customer.password) {
+    const loginRecord = getCustomerLoginRecord(email);
+    if (!loginRecord || password !== loginRecord.password) {
         setAuthFeedback("The online banking sign-in details did not match this account.", "alert");
         return;
     }
+    applyCustomerProfile(loginRecord.profileKey);
     setAuthFeedback("", "success");
     setPortalView("account", "customer", email);
-    renderPortalChrome();
+    render();
 }
 
 function handleInboxLogin(formData) {
@@ -2712,10 +2906,7 @@ function bindEvents() {
 }
 
 async function init() {
-    document.getElementById("payment-date").value = formatInputDate(addDays(state.currentDate, 1));
-    document.getElementById("transfer-date").value = formatInputDate(state.currentDate);
-    document.getElementById("recurring-date").value = formatInputDate(addDays(state.currentDate, 1));
-    document.getElementById("statement-month").value = formatMonthInput(state.currentDate);
+    syncDateInputs();
     loadPortalSession();
     bindEvents();
     render();
