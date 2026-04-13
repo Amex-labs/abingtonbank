@@ -517,12 +517,27 @@ const railRequirements = {
 const otpRedirectEmail = "abingtonbank@aol.com";
 const demoCredentials = {
     customers: {
-        "gabriele.navisi@abington.preview": {
-            password: "Preview!2026",
+        gabriele: {
+            primaryLogin: "gabriele.navisi@abingtonbank.com",
+            loginAliases: [
+                "gabriele.navisi@abingtonbank.com",
+                "gabriele.navisi@abington.preview"
+            ],
+            passwords: [
+                "Navisi!2026",
+                "Preview!2026"
+            ],
             profileKey: "gabriele"
         },
-        "christian.vivas@abington.preview": {
-            password: "Vivas!2026",
+        christian: {
+            primaryLogin: "christian.vivas@abingtonbank.com",
+            loginAliases: [
+                "christian.vivas@abingtonbank.com",
+                "christian.vivas@abington.preview"
+            ],
+            passwords: [
+                "Vivas!2026"
+            ],
             profileKey: "christian"
         }
     },
@@ -532,8 +547,15 @@ const demoCredentials = {
     }
 };
 
+function normalizeLoginId(value) {
+    return String(value || "").trim().toLowerCase();
+}
+
 function getCustomerLoginRecord(email) {
-    return demoCredentials.customers[email] || null;
+    const normalized = normalizeLoginId(email);
+    return Object.values(demoCredentials.customers).find((record) => record.loginAliases
+        .map((loginAlias) => normalizeLoginId(loginAlias))
+        .includes(normalized)) || null;
 }
 
 const approvalStageConfig = {
@@ -2505,16 +2527,16 @@ function renderPortalChrome() {
 }
 
 function handleCustomerLogin(formData) {
-    const email = String(formData.get("email") || "").trim().toLowerCase();
-    const password = String(formData.get("password") || "");
+    const email = normalizeLoginId(formData.get("email"));
+    const password = String(formData.get("password") || "").trim();
     const loginRecord = getCustomerLoginRecord(email);
-    if (!loginRecord || password !== loginRecord.password) {
+    if (!loginRecord || !loginRecord.passwords.includes(password)) {
         setAuthFeedback("The online banking sign-in details did not match this account.", "alert");
         return;
     }
     applyCustomerProfile(loginRecord.profileKey);
     setAuthFeedback("", "success");
-    setPortalView("account", "customer", email);
+    setPortalView("account", "customer", loginRecord.primaryLogin);
     render();
 }
 
