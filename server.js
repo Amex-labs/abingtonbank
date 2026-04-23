@@ -131,15 +131,47 @@ function buildPdfFromLines(lines) {
     return Buffer.from(body, "utf8");
 }
 
-function jsonResponse(response, statusCode, payload) {
-    response.writeHead(statusCode, {
-        "Content-Type": "application/json; charset=utf-8",
+function apiHeaders(extraHeaders = {}) {
+    return {
         "Cache-Control": "no-store",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type"
-    });
+        "Access-Control-Allow-Headers": "Content-Type",
+        ...extraHeaders
+    };
+}
+
+function sanitizeJsonpCallback(value) {
+    const callback = String(value || "").trim();
+    return /^[A-Za-z_$][0-9A-Za-z_$]*(?:\.[A-Za-z_$][0-9A-Za-z_$]*)*$/.test(callback) ? callback : "";
+}
+
+function jsonResponse(response, statusCode, payload) {
+    response.writeHead(statusCode, apiHeaders({
+        "Content-Type": "application/json; charset=utf-8"
+    }));
     response.end(JSON.stringify(payload));
+}
+
+function jsonpResponse(response, statusCode, callbackName, payload) {
+    const safeCallback = sanitizeJsonpCallback(callbackName);
+    if (!safeCallback) {
+        jsonResponse(response, 400, { ok: false, error: "Invalid callback name." });
+        return;
+    }
+    response.writeHead(statusCode, apiHeaders({
+        "Content-Type": "application/javascript; charset=utf-8",
+        "X-Content-Type-Options": "nosniff"
+    }));
+    response.end(`typeof ${safeCallback} === "function" && ${safeCallback}(${JSON.stringify(payload)});`);
+}
+
+function apiResponse(response, statusCode, payload, callbackName = "") {
+    if (callbackName) {
+        jsonpResponse(response, statusCode, callbackName, payload);
+        return;
+    }
+    jsonResponse(response, statusCode, payload);
 }
 
 function fileResponse(response, filePath) {
@@ -630,33 +662,38 @@ function regenerateInboxOtp(transferId) {
     };
 }
 
-function routeApi(request, response, pathname) {
+function routeApi(request, response, url) {
+    const pathname = url.pathname;
+    const callbackName = sanitizeJsonpCallback(url.searchParams.get("callback"));
+
     if (request.method === "OPTIONS" && pathname.startsWith("/api/")) {
-        response.writeHead(204, {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-            "Access-Control-Allow-Headers": "Content-Type"
-        });
+        response.writeHead(204, apiHeaders());
         response.end();
         return true;
     }
 
     if (request.method === "GET" && pathname === "/api/health") {
-        jsonResponse(response, 200, {
+        apiResponse(response, 200, {
             ok: true,
             mode: "local-preview",
             startedAt: STARTED_AT,
             channels: ["otp-email-preview", "receipt-pdf-preview", "email-preview"],
             outboxPath: "outbox/previews"
-        });
+        }, callbackName);
         return true;
     }
 
     if (request.method === "GET" && pathname === "/api/inbox/overview") {
-        jsonResponse(response, 200, {
+        apiResponse(response, 200, {
             ok: true,
             ...listInboxOverview()
-        });
+        }, callbackName);
+        return true;
+    }
+
+    if (request.method === "GET" && pathname === "/api/inbox/regenerate-otp") {
+        const result = regenerateInboxOtp(url.searchParams.get("transferId"));
+        apiResponse(response, result.statusCode, result, callbackName);
         return true;
     }
 
@@ -735,7 +772,7 @@ function resolveStaticPath(pathname) {
 
 function handleRequest(request, response) {
     const url = new URL(request.url, `http://${request.headers.host}`);
-    if (routeApi(request, response, url.pathname)) {
+    if (routeApi(request, response, url)) {
         return;
     }
 
