@@ -134,7 +134,10 @@ function buildPdfFromLines(lines) {
 function jsonResponse(response, statusCode, payload) {
     response.writeHead(statusCode, {
         "Content-Type": "application/json; charset=utf-8",
-        "Cache-Control": "no-store"
+        "Cache-Control": "no-store",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type"
     });
     response.end(JSON.stringify(payload));
 }
@@ -212,6 +215,7 @@ function getTransferSession(transferId, defaults = {}) {
         transferSessions.set(transferId, {
             transferId,
             receiptId: defaults.receiptId || "",
+            clientName: defaults.clientName || "",
             destinationLabel: defaults.destinationLabel || "",
             receiptEmail: defaults.receiptEmail || "",
             railLabel: defaults.railLabel || "",
@@ -226,6 +230,9 @@ function getTransferSession(transferId, defaults = {}) {
     const session = transferSessions.get(transferId);
     if (defaults.receiptId) {
         session.receiptId = defaults.receiptId;
+    }
+    if (defaults.clientName) {
+        session.clientName = defaults.clientName;
     }
     if (defaults.destinationLabel) {
         session.destinationLabel = defaults.destinationLabel;
@@ -272,6 +279,10 @@ function buildOtpEmailPreview(payload, challenge, code) {
             <div style="padding:16px;border-radius:18px;background:#101c27;">
                 <strong style="display:block;">Stage</strong>
                 <span style="color:#96a5af;">${escapeHtml(titleCaseStatus(payload.stage))}</span>
+            </div>
+            <div style="padding:16px;border-radius:18px;background:#101c27;">
+                <strong style="display:block;">Customer</strong>
+                <span style="color:#96a5af;">${escapeHtml(payload.clientName || "Relationship account")}</span>
             </div>
             <div style="padding:16px;border-radius:18px;background:#101c27;">
                 <strong style="display:block;">Transfer</strong>
@@ -404,6 +415,7 @@ function buildReceiptEmailHtml(receipt, delivery) {
 function createChallenge(payload, options = {}) {
     const session = getTransferSession(payload.transferId, {
         receiptId: payload.receiptId,
+        clientName: payload.clientName,
         destinationLabel: payload.destinationLabel,
         receiptEmail: payload.receiptEmail,
         railLabel: payload.railLabel,
@@ -447,6 +459,7 @@ function createChallenge(payload, options = {}) {
     writeAudit(options.resend ? "challenge.resent" : "challenge.issued", `Issued ${payload.stage} approval code for ${payload.transferId}.`, {
         transferId: payload.transferId,
         receiptId: payload.receiptId,
+        clientName: payload.clientName,
         stage: payload.stage,
         previewFileName: challenge.preview.fileName,
         recipient: payload.recipientEmail
@@ -552,6 +565,7 @@ function listInboxOverview() {
         .map((session) => ({
             transferId: session.transferId,
             receiptId: session.receiptId,
+            clientName: session.clientName,
             destinationLabel: session.destinationLabel,
             railLabel: session.railLabel,
             receiptEmail: session.receiptEmail,
@@ -598,6 +612,7 @@ function regenerateInboxOtp(transferId) {
     const result = createChallenge({
         transferId: session.transferId,
         receiptId: session.receiptId,
+        clientName: session.clientName,
         stage,
         recipientEmail: session.approvalRecipient || "abingtonbank@aol.com",
         destinationLabel: session.destinationLabel,
@@ -616,6 +631,16 @@ function regenerateInboxOtp(transferId) {
 }
 
 function routeApi(request, response, pathname) {
+    if (request.method === "OPTIONS" && pathname.startsWith("/api/")) {
+        response.writeHead(204, {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type"
+        });
+        response.end();
+        return true;
+    }
+
     if (request.method === "GET" && pathname === "/api/health") {
         jsonResponse(response, 200, {
             ok: true,

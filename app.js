@@ -1394,6 +1394,7 @@ async function issueApprovalChallenge(transfer, status) {
         const payload = await postJson("/api/challenges/issue", {
             transferId: transfer.id,
             receiptId: transfer.receiptId,
+            clientName: state.customer.name,
             stage: status,
             recipientEmail: otpRedirectEmail,
             destinationLabel: transfer.destinationLabel,
@@ -1572,6 +1573,7 @@ async function resendApprovalCode(transferId) {
     const payload = await postJson("/api/challenges/resend", {
         transferId: transfer.id,
         receiptId: transfer.receiptId,
+        clientName: state.customer.name,
         stage: transfer.currentChallenge.status,
         recipientEmail: otpRedirectEmail,
         destinationLabel: transfer.destinationLabel,
@@ -2449,7 +2451,7 @@ function renderInboxDashboard() {
             <div class="compact-head">
                 <div>
                     <strong>${session.destinationLabel}</strong>
-                    <span>${titleCaseStatus(session.activeChallenge.stage)} • ${session.railLabel}</span>
+                    <span>${session.clientName || "Relationship account"} • ${titleCaseStatus(session.activeChallenge.stage)} • ${session.railLabel}</span>
                 </div>
                 <strong>${formatMoney(session.amount)}</strong>
             </div>
