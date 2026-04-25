@@ -128,7 +128,13 @@
                         </label>
                         <label>
                             Password
-                            <input type="password" name="password" placeholder="Enter your password" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false">
+                            <div class="password-field">
+                                <input type="password" name="password" placeholder="Enter your password" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false">
+                                <button class="password-toggle" type="button" data-password-toggle aria-label="Show password" aria-pressed="false">
+                                    <span class="password-toggle__icon" aria-hidden="true">👁</span>
+                                    <span class="password-toggle__text" data-password-toggle-text>Show</span>
+                                </button>
+                            </div>
                         </label>
                         <button class="action-button" type="submit">Login to online banking</button>
                     </form>
@@ -144,7 +150,13 @@
                         </label>
                         <label>
                             Create password
-                            <input type="password" name="password" placeholder="Create a password" autocomplete="new-password">
+                            <div class="password-field">
+                                <input type="password" name="password" placeholder="Create a password" autocomplete="new-password">
+                                <button class="password-toggle" type="button" data-password-toggle aria-label="Show password" aria-pressed="false">
+                                    <span class="password-toggle__icon" aria-hidden="true">👁</span>
+                                    <span class="password-toggle__text" data-password-toggle-text>Show</span>
+                                </button>
+                            </div>
                         </label>
                         <button class="action-button" type="submit">Create online profile</button>
                     </form>

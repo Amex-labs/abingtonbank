@@ -75,6 +75,35 @@ function loadAdminSession() {
     }
 }
 
+function bindPasswordToggles() {
+    document.querySelectorAll("[data-password-toggle]").forEach((button) => {
+        if (button.dataset.passwordToggleBound === "true") {
+            return;
+        }
+        const field = button.closest(".password-field");
+        const input = field?.querySelector("input");
+        const label = button.querySelector("[data-password-toggle-text]");
+        if (!input) {
+            return;
+        }
+
+        const setVisible = (visible) => {
+            input.type = visible ? "text" : "password";
+            button.setAttribute("aria-label", visible ? "Hide password" : "Show password");
+            button.setAttribute("aria-pressed", String(visible));
+            if (label) {
+                label.textContent = visible ? "Hide" : "Show";
+            }
+        };
+
+        setVisible(false);
+        button.addEventListener("click", () => {
+            setVisible(input.type === "password");
+        });
+        button.dataset.passwordToggleBound = "true";
+    });
+}
+
 function setAdminView() {
     document.getElementById("admin-login").hidden = adminState.authenticated;
     document.getElementById("admin-dashboard").hidden = !adminState.authenticated;
@@ -272,6 +301,7 @@ function bindAdminEvents() {
 
 function initAdmin() {
     loadAdminSession();
+    bindPasswordToggles();
     bindAdminEvents();
     setAdminView();
     if (adminState.authenticated) {

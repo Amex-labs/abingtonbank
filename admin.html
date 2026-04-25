@@ -25,7 +25,13 @@
                 </label>
                 <label>
                     Password
-                    <input type="password" name="password" autocomplete="current-password" placeholder="Enter administrative password">
+                    <div class="password-field">
+                        <input type="password" name="password" autocomplete="current-password" placeholder="Enter administrative password">
+                        <button class="password-toggle" type="button" data-password-toggle aria-label="Show password" aria-pressed="false">
+                            <span class="password-toggle__icon" aria-hidden="true">👁</span>
+                            <span class="password-toggle__text" data-password-toggle-text>Show</span>
+                        </button>
+                    </div>
                 </label>
                 <button class="action-button" type="submit">Login</button>
                 <div id="admin-login-feedback" class="auth-feedback" hidden></div>
