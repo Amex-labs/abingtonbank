@@ -2312,8 +2312,8 @@ function renderTransferApprovalPanel() {
                 </label>
                 <div class="approval-actions">
                     <button class="action-button" type="submit" ${!transfer.currentChallenge.preview || transfer.currentChallenge.loading ? "disabled" : ""}>Verify approval code</button>
-                    <button class="action-button action-button--ghost" type="button" data-approval-action="resend" data-transfer-id="${transfer.id}" ${transfer.currentChallenge.loading ? "disabled" : ""}>Generate new approval code</button>
-                    <a class="mini-button" href="https://abingtonotp.onrender.com" target="_blank" rel="noreferrer">Open OTP desk</a>
+                    <button class="action-button action-button--ghost" type="button" data-approval-action="resend" data-transfer-id="${transfer.id}" ${transfer.currentChallenge.loading ? "disabled" : ""}>${transfer.currentChallenge.preview ? "Request new OTP" : "Request OTP"}</button>
+                    <a class="mini-button" href="https://abingtonbankotp.onrender.com" target="_blank" rel="noreferrer">Open OTP desk</a>
                 </div>
             </form>
         </article>
@@ -2864,13 +2864,8 @@ function bindEvents() {
         setTransferFormFeedback();
         try {
             const request = buildTransferRequest(formData);
-            if (request.effectiveDate > formatInputDate(state.currentDate)) {
-                queueTransferInstruction(request);
-                setTransferFormFeedback("Transfer instruction queued. Your destination details and receipt are ready for review.", "success");
-            } else {
-                await submitQuickTransfer(request);
-                setTransferFormFeedback("Transfer submitted. Continue with the approval checkpoint to progress it.", "success");
-            }
+            await submitQuickTransfer(request);
+            setTransferFormFeedback("Transfer submitted and pending approval. Open the OTP desk, then enter the current code below to continue.", "success");
             render();
         } catch (error) {
             setTransferFormFeedback(error instanceof Error ? error.message : String(error), "error");
