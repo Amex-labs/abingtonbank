@@ -497,19 +497,19 @@ function signOutToHome() {
 
 const railRequirements = {
     internal: {
-        heading: "Internal transfers require a funding account, destination account, beneficiary details, routing code, destination account number, transfer description, and memo.",
+        heading: "Choose an account, recipient, destination reference, transfer description, and memo. This workspace records a simulated internal movement only.",
         verifications: []
     },
     ach: {
-        heading: "ACH transfers require beneficiary name, destination bank, routing or sort code, confirmed account number, transfer description, SEC class, delivery speed, and active KYC, identity, and ACH profile checks.",
+        heading: "Enter the beneficiary, bank, routing or sort code, confirmed account reference, transfer description, and delivery preferences. The simulator accepts common domestic and international reference formats.",
         verifications: ["kyc", "identity", "ach"]
     },
     fedwire: {
-        heading: "Fedwire instructions require beneficiary name, destination bank, ABA or routing code, confirmed beneficiary account, beneficiary address, purpose code, transfer description, and active KYC, identity, and Fedwire checks.",
+        heading: "Enter the beneficiary, bank, routing reference, confirmed account reference, address, purpose code, and transfer description for this simulated wire workflow.",
         verifications: ["kyc", "identity", "fedwire"]
     },
     cardNetwork: {
-        heading: "Card network payouts require beneficiary name, settlement bank, routing or sort code, settlement account number, processor reference, transfer description, and active identity plus card network checks.",
+        heading: "Enter the beneficiary, settlement bank, routing reference, destination account, processor reference, and transfer description for this simulated card payout workflow.",
         verifications: ["identity", "cardNetwork"]
     }
 };
@@ -605,12 +605,13 @@ function requirePositiveAmount(value, label = "Amount") {
     return amount;
 }
 
-function requireDigits(value, label, allowedLengths) {
-    const digits = String(value || "").replace(/\D/g, "");
-    if (!allowedLengths.includes(digits.length)) {
-        throw new Error(`${label} must contain ${allowedLengths.join(" or ")} digits.`);
+function requireDestinationIdentifier(value, label, minimumLength, maximumLength) {
+    const normalized = String(value || "").trim();
+    const canonical = normalized.replace(/[^a-z0-9]/gi, "").toUpperCase();
+    if (canonical.length < minimumLength || canonical.length > maximumLength) {
+        throw new Error(`${label} must contain between ${minimumLength} and ${maximumLength} letters or numbers.`);
     }
-    return digits;
+    return canonical;
 }
 
 function requireMatchingValues(leftValue, rightValue, label) {
@@ -1020,6 +1021,25 @@ function ensureVerificationsForRail(railType) {
     return requiredCalls.map((callName) => getVerification(callName).label);
 }
 
+function prepareDemoRailChecks(railType) {
+    const requiredCalls = railRequirements[railType]?.verifications || [];
+    const updatedCalls = [];
+    requiredCalls.forEach((callName) => {
+        const call = getVerification(callName);
+        if (!call || ["approved", "verified", "active"].includes(call.status)) {
+            return;
+        }
+        call.status = callName === "kyc" ? "approved" : callName === "identity" ? "verified" : "active";
+        call.lastRunAt = nextTimestamp();
+        call.note = `${call.label} prepared for this simulated ${getRailLabel(railType)} transfer.`;
+        updatedCalls.push(call.label);
+    });
+    if (updatedCalls.length) {
+        pushAudit("customer", "Simulated transfer readiness", `Prepared ${updatedCalls.join(", ")} for a ${getRailLabel(railType)} transfer.`);
+        pushNotification("Transfer readiness prepared", `${updatedCalls.join(", ")} is ready for this simulated transfer.`, "info");
+    }
+}
+
 function getRailClearingPool(railType) {
     switch (railType) {
         case "ach":
@@ -1053,8 +1073,8 @@ function reserveExternalTransfer(request) {
 function buildTransferRequest(formData) {
     const railType = requireText(formData.get("railType"), "Rail");
     const amount = requirePositiveAmount(formData.get("amount"));
-    const accountNumber = requireDigits(formData.get("accountNumber"), "Account number", [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]);
-    const confirmAccountNumber = requireDigits(formData.get("confirmAccountNumber"), "Confirm account number", [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]);
+    const accountNumber = requireDestinationIdentifier(formData.get("accountNumber"), "Account number", 4, 34);
+    const confirmAccountNumber = requireDestinationIdentifier(formData.get("confirmAccountNumber"), "Confirm account number", 4, 34);
     requireMatchingValues(accountNumber, confirmAccountNumber, "Account number confirmation");
 
     const request = {
@@ -1064,7 +1084,7 @@ function buildTransferRequest(formData) {
         effectiveDate: requireText(formData.get("effectiveDate"), "Effective date"),
         beneficiaryName: requireText(formData.get("beneficiaryName"), "Beneficiary name"),
         receivingBank: requireText(formData.get("beneficiaryBank"), "Destination bank"),
-        routingNumber: requireDigits(formData.get("routingNumber"), "Routing / sort code", [9]),
+        routingNumber: requireDestinationIdentifier(formData.get("routingNumber"), "Routing / sort code", 4, 20),
         accountNumber,
         receiptEmail: requireText(formData.get("receiptEmail"), "Receipt email"),
         purpose: requireText(formData.get("purpose"), "Transfer purpose"),
@@ -1419,7 +1439,26 @@ async function issueApprovalChallenge(transfer, status) {
 
     syncQuickTransferReceipt(transfer);
     render();
+    focusTransferApproval(transfer.id);
     return transfer.currentChallenge;
+}
+
+function focusTransferApproval(transferId) {
+    window.requestAnimationFrame(() => {
+        const panel = document.getElementById("transfer-approval-panel");
+        const form = panel?.querySelector(`[data-approval-form="${transferId}"]`);
+        if (!panel || !form) {
+            return;
+        }
+        panel.scrollIntoView({ behavior: "smooth", block: "center" });
+        window.setTimeout(() => {
+            const codeInput = form.querySelector("input[name='approvalCode']");
+            const nextTarget = codeInput && !codeInput.disabled
+                ? codeInput
+                : form.querySelector("[data-approval-action='resend']");
+            nextTarget?.focus({ preventScroll: true });
+        }, 350);
+    });
 }
 
 async function advanceTransferToStage(transferId, nextStatus, note) {
@@ -1594,6 +1633,7 @@ async function resendApprovalCode(transferId) {
 
 async function submitQuickTransfer(request) {
     await ensureBackendReady();
+    prepareDemoRailChecks(request.railType);
     const execution = request.railType === "internal"
         ? transferAssetsBetweenAccounts(request.fromAccountId, request.toAccountId, request.amount, request.memo)
         : reserveExternalTransfer(request);
@@ -2116,8 +2156,8 @@ function renderQuickTransferWorkspace() {
     document.getElementById("poster-quick-transfer-button").textContent = "Quick Transfer";
     document.getElementById("home-download-receipt").disabled = !state.lastReceiptText && !state.lastReceiptDelivery?.pdfUrl;
     if (transferSubmitButton) {
-        transferSubmitButton.disabled = !state.backend.online;
-        transferSubmitButton.textContent = state.backend.online ? "Transfer funds" : "Transfer service unavailable";
+        transferSubmitButton.disabled = false;
+        transferSubmitButton.textContent = state.backend.pending ? "Preparing transfer..." : "Continue to transfer review";
     }
 }
 
@@ -2235,15 +2275,12 @@ function renderTransferApprovalPanel() {
     const target = document.getElementById("transfer-approval-panel");
     const transfersAwaitingApproval = state.quickTransfers.filter((transfer) => transfer.currentChallenge && !transfer.finalized);
     if (!transfersAwaitingApproval.length) {
-        target.innerHTML = `
-            <article class="approval-card approval-card--empty">
-                <p class="eyebrow">Approval center</p>
-                <h4>No code request is waiting</h4>
-                <p>When a transfer reaches a stage checkpoint, a fresh approval request appears here for verification.</p>
-            </article>
-        `;
+        target.hidden = true;
+        target.innerHTML = "";
         return;
     }
+
+    target.hidden = false;
 
     target.innerHTML = transfersAwaitingApproval.map((transfer) => `
         <article class="approval-card">
@@ -2255,15 +2292,15 @@ function renderTransferApprovalPanel() {
                 </div>
                 <span class="status-badge" data-status="${transfer.status}">${titleCaseStatus(transfer.status)}</span>
             </div>
-            <p class="approval-fee">Fee required ${formatMoney(transfer.currentChallenge.reviewAmount)}</p>
-            <p class="approval-note">An approval code has been issued to the separate administrative inbox. Retrieve the current code from the admin dashboard before continuing.</p>
+            <p class="approval-fee">Simulated approval checkpoint</p>
+            <p class="approval-note">A one-time code has been issued to the separate OTP desk. Open the OTP desk, copy the current code for this transfer, then enter it below to continue.</p>
             ${transfer.currentChallenge.loading ? `<p class="approval-note">Preparing the current approval request...</p>` : ""}
             ${transfer.currentChallenge.errorMessage ? `<p class="approval-note approval-note--alert">${transfer.currentChallenge.errorMessage}</p>` : ""}
             ${transfer.currentChallenge.preview ? `
                 <div class="approval-code-chip">Approval code issued</div>
                 <div class="approval-preview-meta">
                     <small>Expires ${formatDateTime(transfer.currentChallenge.expiresAt)}</small>
-                    <small>Check the admin dashboard for the current code.</small>
+                    <small>Enter the current code below to move this transfer forward.</small>
                 </div>
             ` : `
                 <div class="approval-code-chip">Approval code unavailable</div>
@@ -2276,6 +2313,7 @@ function renderTransferApprovalPanel() {
                 <div class="approval-actions">
                     <button class="action-button" type="submit" ${!transfer.currentChallenge.preview || transfer.currentChallenge.loading ? "disabled" : ""}>Verify approval code</button>
                     <button class="action-button action-button--ghost" type="button" data-approval-action="resend" data-transfer-id="${transfer.id}" ${transfer.currentChallenge.loading ? "disabled" : ""}>Generate new approval code</button>
+                    <a class="mini-button" href="https://abingtonotp.onrender.com" target="_blank" rel="noreferrer">Open OTP desk</a>
                 </div>
             </form>
         </article>
@@ -2704,6 +2742,41 @@ function bindPasswordToggles() {
     });
 }
 
+function setTransferFormFeedback(message = "", tone = "info") {
+    const target = document.getElementById("transfer-form-feedback");
+    if (!target) {
+        return;
+    }
+    target.hidden = !message;
+    target.textContent = message;
+    target.dataset.tone = tone;
+}
+
+function bindTransferInputAssistance() {
+    const form = document.getElementById("transfer-form");
+    const accountInput = form?.elements.accountNumber;
+    const confirmationInput = form?.elements.confirmAccountNumber;
+    if (!form || !accountInput || !confirmationInput || form.dataset.inputAssistanceBound === "true") {
+        return;
+    }
+
+    confirmationInput.dataset.autoSync = String(!confirmationInput.value || confirmationInput.value === accountInput.value);
+    accountInput.addEventListener("input", () => {
+        if (confirmationInput.dataset.autoSync === "true") {
+            confirmationInput.value = accountInput.value;
+        }
+        setTransferFormFeedback();
+    });
+    confirmationInput.addEventListener("input", () => {
+        confirmationInput.dataset.autoSync = String(confirmationInput.value === accountInput.value);
+        setTransferFormFeedback();
+    });
+    [form.elements.routingNumber, form.elements.beneficiaryName, form.elements.beneficiaryBank].forEach((input) => {
+        input?.addEventListener("input", () => setTransferFormFeedback());
+    });
+    form.dataset.inputAssistanceBound = "true";
+}
+
 function bindEvents() {
     document.querySelectorAll("[data-home-jump]").forEach((button) => {
         button.addEventListener("click", () => {
@@ -2788,15 +2861,19 @@ function bindEvents() {
     document.getElementById("transfer-form").addEventListener("submit", async (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
+        setTransferFormFeedback();
         try {
             const request = buildTransferRequest(formData);
             if (request.effectiveDate > formatInputDate(state.currentDate)) {
                 queueTransferInstruction(request);
+                setTransferFormFeedback("Transfer instruction queued. Your destination details and receipt are ready for review.", "success");
             } else {
                 await submitQuickTransfer(request);
+                setTransferFormFeedback("Transfer submitted. Continue with the approval checkpoint to progress it.", "success");
             }
             render();
         } catch (error) {
+            setTransferFormFeedback(error instanceof Error ? error.message : String(error), "error");
             showError(error);
         }
     });
@@ -2962,6 +3039,7 @@ async function init() {
     syncDateInputs();
     loadPortalSession();
     bindPasswordToggles();
+    bindTransferInputAssistance();
     bindEvents();
     render();
     await refreshBackendHealth();

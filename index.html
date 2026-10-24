@@ -370,7 +370,21 @@
                                     </div>
                                     <button class="mini-button" id="quick-transfer-close" type="button">Collapse</button>
                                 </div>
-                                <form id="transfer-form" class="control-form quick-transfer-form">
+                                <form id="transfer-form" class="control-form quick-transfer-form" novalidate>
+                                    <div class="transfer-workflow full-span" aria-label="Transfer workflow">
+                                        <span class="transfer-workflow__step transfer-workflow__step--active"><b>1</b> Set up</span>
+                                        <span class="transfer-workflow__line" aria-hidden="true"></span>
+                                        <span class="transfer-workflow__step"><b>2</b> Review</span>
+                                        <span class="transfer-workflow__line" aria-hidden="true"></span>
+                                        <span class="transfer-workflow__step"><b>3</b> Approve</span>
+                                    </div>
+                                    <div class="transfer-section-label full-span">
+                                        <span>01</span>
+                                        <div>
+                                            <strong>Funding and delivery</strong>
+                                            <p>Choose the transfer rail, funding account, amount, and requested date.</p>
+                                        </div>
+                                    </div>
                                     <label>
                                         Rail
                                         <select name="railType" id="transfer-rail">
@@ -392,6 +406,13 @@
                                         Effective date
                                         <input type="date" name="effectiveDate" id="transfer-date">
                                     </label>
+                                    <div class="transfer-section-label full-span">
+                                        <span>02</span>
+                                        <div>
+                                            <strong>Recipient and routing</strong>
+                                            <p>Use the recipient details you want to simulate. Account confirmation stays in sync while you edit.</p>
+                                        </div>
+                                    </div>
                                     <label>
                                         Beneficiary name
                                         <input type="text" name="beneficiaryName" value="Sterling Home Services">
@@ -402,21 +423,28 @@
                                     </label>
                                     <label>
                                         Routing / sort code
-                                        <input type="text" name="routingNumber" inputmode="numeric" maxlength="9" value="021000021">
+                                        <input type="text" name="routingNumber" inputmode="text" maxlength="20" autocomplete="off" autocapitalize="characters" value="021000021">
                                     </label>
                                     <label>
                                         Account number
-                                        <input type="text" name="accountNumber" inputmode="numeric" value="5520198841">
+                                        <input type="text" name="accountNumber" inputmode="text" maxlength="34" autocomplete="off" autocapitalize="characters" value="5520198841">
                                     </label>
                                     <label>
                                         Confirm account number
-                                        <input type="text" name="confirmAccountNumber" inputmode="numeric" value="5520198841">
+                                        <input type="text" name="confirmAccountNumber" inputmode="text" maxlength="34" autocomplete="off" autocapitalize="characters" value="5520198841">
                                     </label>
                                     <label>
                                         Receipt email
                                         <input type="email" name="receiptEmail" value="ops@sterling-services.test">
                                     </label>
                                     <div id="transfer-guardrail" class="transfer-guidance full-span"></div>
+                                    <div class="transfer-section-label full-span">
+                                        <span>03</span>
+                                        <div>
+                                            <strong>Rail-specific details</strong>
+                                            <p>Complete the selected delivery details before moving to transfer review.</p>
+                                        </div>
+                                    </div>
                                     <div class="rail-fields full-span">
                                         <div class="rail-panel rail-panel--active" data-rail-fields="internal">
                                             <label>
@@ -516,8 +544,16 @@
                                         Memo
                                         <input type="text" name="memo" value="Relationship transfer">
                                     </label>
-                                    <button class="action-button" type="submit">Transfer funds</button>
+                                    <div class="transfer-submit-bar full-span">
+                                        <div>
+                                            <strong>Ready for review</strong>
+                                            <span>Destination details stay editable until you submit this simulated transfer.</span>
+                                        </div>
+                                        <button class="action-button" type="submit">Continue to transfer review</button>
+                                    </div>
+                                    <p id="transfer-form-feedback" class="transfer-form-feedback full-span" role="status" aria-live="polite" hidden></p>
                                 </form>
+                                <div id="transfer-approval-panel" class="transfer-approval-panel" aria-live="polite"></div>
                             </div>
                         </section>
 
@@ -532,7 +568,6 @@
                         <p class="section-copy">Recent transfer history stays visible on the overview with the latest status, receipt, and approval activity.</p>
                         <div id="home-transfer-status" class="compact-list"></div>
                         <div id="quick-transfer-progress" class="transfer-progress-stack"></div>
-                        <div id="transfer-approval-panel" class="transfer-approval-panel"></div>
                         <div id="home-receipt-summary" class="compact-list compact-list--divider"></div>
                         <div id="transfer-delivery-preview" class="compact-list compact-list--divider"></div>
                     </section>
