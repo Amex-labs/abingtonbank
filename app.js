@@ -372,15 +372,44 @@ async function readJsonResponse(response) {
     return payload;
 }
 
+function wait(milliseconds) {
+    return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+}
+
 async function postJson(url, body) {
-    const response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-    });
-    return readJsonResponse(response);
+    let lastError;
+
+    // Render instances can briefly wake or recycle. Retry only transport errors;
+    // server responses such as an incorrect code should be returned immediately.
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+        const controller = new AbortController();
+        const timeout = window.setTimeout(() => controller.abort(), 15000);
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body),
+                cache: "no-store",
+                signal: controller.signal
+            });
+            return await readJsonResponse(response);
+        } catch (error) {
+            lastError = error;
+            if (error?.statusCode || attempt === 1) {
+                break;
+            }
+            await wait(700);
+        } finally {
+            window.clearTimeout(timeout);
+        }
+    }
+
+    if (!lastError?.statusCode && (lastError instanceof TypeError || lastError?.name === "AbortError")) {
+        throw new Error("The approval service could not be reached. Wait a moment, then request a fresh OTP and try again.");
+    }
+    throw lastError instanceof Error ? lastError : new Error("The transfer service could not complete the request.");
 }
 
 async function refreshBackendHealth() {
@@ -1535,15 +1564,23 @@ async function verifyApprovalCode(transferId, codeInput) {
             code: normalized
         });
     } catch (error) {
-        if (error instanceof Error && (error.statusCode === 410 || error.statusCode === 409)) {
+        if (error instanceof Error && (error.statusCode === 404 || error.statusCode === 410 || error.statusCode === 409)) {
             try {
-                await resendApprovalCode(transferId);
+                // A recycled sandbox server no longer has the original session.
+                // Issuing a replacement works for both expired and reset sessions.
+                await issueApprovalChallenge(transfer, transfer.currentChallenge.status);
             } catch (refreshError) {
                 render();
                 throw refreshError instanceof Error ? refreshError : new Error("A fresh approval code could not be generated.");
             }
             render();
-            throw new Error("That approval code expired or changed. A fresh code has been issued to the administrative inbox.");
+            throw new Error("That approval session expired, changed, or was restarted. A fresh OTP has been issued to the approval inbox. Enter the newest code to continue.");
+        }
+        if (!error?.statusCode) {
+            transfer.currentChallenge.errorMessage = error instanceof Error ? error.message : "The approval service could not be reached.";
+            transfer.currentChallenge.note = "Verification could not reach the approval service. Request a fresh OTP once the service is available.";
+            render();
+            throw error instanceof Error ? error : new Error("The approval service could not be reached.");
         }
         transfer.currentChallenge.attempts += 1;
         pushNotification("Approval code mismatch", `The ${transfer.currentChallenge.label} approval code did not match for ${transfer.destinationLabel}.`, "alert");
@@ -1609,19 +1646,31 @@ async function resendApprovalCode(transferId) {
     transfer.statusHistory = transfer.statusHistory.slice(0, 10);
     render();
 
-    const payload = await postJson("/api/challenges/resend", {
-        transferId: transfer.id,
-        receiptId: transfer.receiptId,
-        clientName: state.customer.name,
-        stage: transfer.currentChallenge.status,
-        recipientEmail: otpRedirectEmail,
-        destinationLabel: transfer.destinationLabel,
-        railLabel: transfer.railLabel,
-        receiptEmail: transfer.receiptEmail,
-        amount: transfer.amount,
-        requestedAt: transfer.currentChallenge.createdAt,
-        reviewAmount: transfer.currentChallenge.reviewAmount
-    });
+    let payload;
+    try {
+        payload = await postJson("/api/challenges/resend", {
+            transferId: transfer.id,
+            receiptId: transfer.receiptId,
+            clientName: state.customer.name,
+            stage: transfer.currentChallenge.status,
+            recipientEmail: otpRedirectEmail,
+            destinationLabel: transfer.destinationLabel,
+            railLabel: transfer.railLabel,
+            receiptEmail: transfer.receiptEmail,
+            amount: transfer.amount,
+            requestedAt: transfer.currentChallenge.createdAt,
+            reviewAmount: transfer.currentChallenge.reviewAmount
+        });
+    } catch (error) {
+        if (error?.statusCode === 404 || error?.statusCode === 410) {
+            return issueApprovalChallenge(transfer, transfer.currentChallenge.status);
+        }
+        transfer.currentChallenge.loading = false;
+        transfer.currentChallenge.errorMessage = error instanceof Error ? error.message : String(error);
+        transfer.currentChallenge.note = "A new OTP could not be requested. Try again when the approval service is available.";
+        render();
+        throw error;
+    }
     transfer.currentChallenge.id = payload.challengeId;
     transfer.currentChallenge.preview = payload.preview;
     transfer.currentChallenge.expiresAt = payload.expiresAt;
